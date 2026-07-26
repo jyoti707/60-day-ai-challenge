@@ -1,0 +1,858 @@
+<style>
+  :root{
+    --bg:#f4f6fb;
+    --card-bg:#ffffff;
+    --border:#e3e7f0;
+    --text-primary:#1a1d29;
+    --text-secondary:#5b6072;
+    --accent:#4f5fff;
+    --accent-soft:#eef0ff;
+    --red-bg:#fdeaea; --red-text:#c0392b;
+    --orange-bg:#fff3e0; --orange-text:#b8630a;
+    --green-bg:#e8f7ee; --green-text:#1f8a4c;
+    --yellow-bg:#fff8e1; --yellow-text:#a37c00;
+    --purple-bg:#f2ecfd; --purple-text:#6b3fd4;
+    --shadow: 0 2px 10px rgba(20,20,50,0.06);
+    --shadow-hover: 0 8px 24px rgba(20,20,50,0.10);
+    --radius:14px;
+  }
+  *{box-sizing:border-box;}
+  body,html{margin:0;padding:0;}
+  .dashboard{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:var(--bg);
+    color:var(--text-primary);
+    padding:24px;
+    min-height:100vh;
+  }
+  .header{
+    margin-bottom:24px;
+  }
+  .header h1{
+    font-size:26px;
+    margin:0 0 4px 0;
+    font-weight:700;
+  }
+  .header .meta{
+    color:var(--text-secondary);
+    font-size:14px;
+    display:flex;
+    flex-wrap:wrap;
+    gap:14px;
+  }
+  .participants{
+    margin-top:10px;
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+  }
+  .participant-chip{
+    background:var(--accent-soft);
+    color:var(--accent);
+    padding:5px 12px;
+    border-radius:20px;
+    font-size:13px;
+    font-weight:600;
+  }
+  .section{
+    margin-bottom:28px;
+  }
+  .section-title{
+    font-size:17px;
+    font-weight:700;
+    margin-bottom:12px;
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .card{
+    background:var(--card-bg);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    box-shadow:var(--shadow);
+    padding:18px;
+    transition:box-shadow .2s ease, transform .2s ease;
+  }
+  .card:hover{
+    box-shadow:var(--shadow-hover);
+    transform:translateY(-2px);
+  }
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+    gap:16px;
+  }
+  .badge{
+    display:inline-flex;
+    align-items:center;
+    gap:4px;
+    font-size:12px;
+    font-weight:700;
+    padding:4px 10px;
+    border-radius:20px;
+    white-space:nowrap;
+  }
+  .badge-high{background:var(--red-bg);color:var(--red-text);}
+  .badge-medium{background:var(--orange-bg);color:var(--orange-text);}
+  .badge-low{background:var(--green-bg);color:var(--green-text);}
+  .badge-conflict{background:var(--red-bg);color:var(--red-text);}
+  .badge-question{background:var(--purple-bg);color:var(--purple-text);}
+  .badge-completed{background:var(--green-bg);color:var(--green-text);}
+  .badge-pending{background:var(--yellow-bg);color:var(--yellow-text);}
+
+  table{
+    width:100%;
+    border-collapse:collapse;
+    background:var(--card-bg);
+    border-radius:var(--radius);
+    overflow:hidden;
+    box-shadow:var(--shadow);
+  }
+  thead{
+    background:var(--accent);
+  }
+  thead th{
+    color:#fff;
+    text-align:left;
+    padding:12px 14px;
+    font-size:13px;
+    letter-spacing:.02em;
+  }
+  tbody td{
+    padding:12px 14px;
+    border-top:1px solid var(--border);
+    font-size:14px;
+    vertical-align:top;
+  }
+  tbody tr:hover{
+    background:#fafbff;
+  }
+  .task-name{
+    font-weight:600;
+  }
+  .owner-chip{
+    background:var(--accent-soft);
+    color:var(--accent);
+    padding:3px 10px;
+    border-radius:16px;
+    font-size:12px;
+    font-weight:700;
+  }
+
+  .list-card ul{
+    margin:0;
+    padding-left:18px;
+  }
+  .list-card li{
+    margin-bottom:8px;
+    font-size:14px;
+    line-height:1.5;
+  }
+
+  .collapsible{
+    background:var(--card-bg);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    box-shadow:var(--shadow);
+    overflow:hidden;
+  }
+  .collapsible summary{
+    cursor:pointer;
+    padding:14px 18px;
+    font-weight:700;
+    font-size:14px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    list-style:none;
+  }
+  .collapsible summary::-webkit-details-marker{display:none;}
+  .collapsible summary:after{
+    content:"▾";
+    color:var(--text-secondary);
+    transition:transform .2s ease;
+  }
+  .collapsible[open] summary:after{
+    transform:rotate(180deg);
+  }
+  .collapsible .content{
+    padding:0 18px 16px 18px;
+    font-size:14px;
+    color:var(--text-secondary);
+    line-height:1.6;
+  }
+
+  /* Interactive additions */
+  .progress-card{
+    display:flex;
+    flex-wrap:wrap;
+    align-items:center;
+    gap:20px;
+    justify-content:space-between;
+  }
+  .progress-stat{
+    text-align:center;
+    min-width:80px;
+  }
+  .progress-stat .num{
+    font-size:22px;
+    font-weight:800;
+  }
+  .progress-stat .lbl{
+    font-size:11px;
+    color:var(--text-secondary);
+    text-transform:uppercase;
+    letter-spacing:.03em;
+  }
+  .progress-bar-track{
+    flex:1;
+    min-width:160px;
+    height:10px;
+    background:var(--border);
+    border-radius:20px;
+    overflow:hidden;
+  }
+  .progress-bar-fill{
+    height:100%;
+    background:linear-gradient(90deg,var(--accent),#7d8bff);
+    width:0%;
+    transition:width .4s ease;
+    border-radius:20px;
+  }
+
+  .filter-bar{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+    margin-bottom:14px;
+  }
+  .filter-btn{
+    border:1px solid var(--border);
+    background:var(--card-bg);
+    color:var(--text-secondary);
+    font-size:12px;
+    font-weight:700;
+    padding:6px 14px;
+    border-radius:20px;
+    cursor:pointer;
+    transition:all .15s ease;
+  }
+  .filter-btn:hover{
+    border-color:var(--accent);
+    color:var(--accent);
+  }
+  .filter-btn.active{
+    background:var(--accent);
+    border-color:var(--accent);
+    color:#fff;
+  }
+
+  .search-input{
+    width:100%;
+    max-width:320px;
+    padding:9px 14px;
+    border:1px solid var(--border);
+    border-radius:20px;
+    font-size:13px;
+    margin-bottom:14px;
+    outline:none;
+    transition:border-color .15s ease;
+  }
+  .search-input:focus{
+    border-color:var(--accent);
+  }
+
+  .status-toggle{
+    cursor:pointer;
+    user-select:none;
+    border:none;
+    transition:transform .12s ease;
+  }
+  .status-toggle:hover{
+    transform:scale(1.06);
+  }
+  .status-toggle:active{
+    transform:scale(0.96);
+  }
+  .hint{
+    font-size:11px;
+    color:var(--text-secondary);
+    margin-bottom:8px;
+    font-style:italic;
+  }
+
+  .task-row.row-hidden{
+    display:none;
+  }
+
+  .speaker-tabs{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+    margin-bottom:16px;
+  }
+  .speaker-tab-btn{
+    border:1px solid var(--border);
+    background:var(--card-bg);
+    color:var(--text-secondary);
+    font-size:13px;
+    font-weight:700;
+    padding:8px 16px;
+    border-radius:20px;
+    cursor:pointer;
+    transition:all .15s ease;
+  }
+  .speaker-tab-btn:hover{
+    border-color:var(--accent);
+    color:var(--accent);
+  }
+  .speaker-tab-btn.active{
+    background:var(--accent);
+    border-color:var(--accent);
+    color:#fff;
+  }
+  .speaker-panel{
+    display:none;
+  }
+  .speaker-panel.active{
+    display:block;
+  }
+
+  .conflict-card, .risk-card, .question-card{
+    cursor:pointer;
+  }
+  .ack-tag{
+    display:inline-block;
+    font-size:11px;
+    font-weight:700;
+    color:var(--green-text);
+    background:var(--green-bg);
+    padding:3px 9px;
+    border-radius:12px;
+    margin-top:8px;
+  }
+  .flagged-card{
+    opacity:0.55;
+  }
+
+  .back-to-top{
+    position:fixed;
+    bottom:22px;
+    right:22px;
+    background:var(--accent);
+    color:#fff;
+    border:none;
+    width:44px;
+    height:44px;
+    border-radius:50%;
+    font-size:18px;
+    cursor:pointer;
+    box-shadow:var(--shadow-hover);
+    display:none;
+    align-items:center;
+    justify-content:center;
+    z-index:50;
+  }
+  .back-to-top.show{
+    display:flex;
+  }
+
+  .speaker-card{
+    border-left:4px solid var(--accent);
+  }
+  .speaker-name{
+    font-weight:700;
+    font-size:15px;
+    margin-bottom:6px;
+    color:var(--accent);
+  }
+  .speaker-summary{
+    font-size:14px;
+    color:var(--text-secondary);
+    margin-bottom:10px;
+    line-height:1.5;
+  }
+  .subheading{
+    font-size:12px;
+    font-weight:700;
+    text-transform:uppercase;
+    letter-spacing:.03em;
+    color:var(--text-secondary);
+    margin:8px 0 4px 0;
+  }
+
+  .conflict-card{
+    border-left:4px solid var(--red-text);
+    background:var(--red-bg);
+  }
+  .conflict-card p{
+    margin:6px 0;
+    font-size:14px;
+    color:var(--text-primary);
+  }
+
+  .risk-card{
+    border-left:4px solid var(--orange-text);
+  }
+
+  .question-card{
+    border-left:4px solid var(--purple-text);
+  }
+
+  @media (max-width:600px){
+    .dashboard{padding:14px;}
+    .header h1{font-size:21px;}
+    table, thead, tbody, th, td, tr{display:block;}
+    thead{display:none;}
+    tbody tr{
+      margin-bottom:14px;
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+    tbody td{
+      border-top:none;
+      padding:8px 14px;
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+    }
+    tbody td:before{
+      content:attr(data-label);
+      font-weight:700;
+      color:var(--text-secondary);
+      font-size:12px;
+    }
+  }
+</style>
+
+<div class="dashboard">
+
+  <div class="header">
+    <h1>CampusConnect Portal — Project Kickoff Meeting</h1>
+    <div class="meta">
+      <span>📅 Date: July 26, 2026</span>
+      <span>⏱ Duration: 45 minutes</span>
+    </div>
+    <div class="participants">
+      <span class="participant-chip">Anita</span>
+      <span class="participant-chip">Rahul</span>
+      <span class="participant-chip">Priya</span>
+      <span class="participant-chip">Karan</span>
+      <span class="participant-chip">Megha</span>
+    </div>
+  </div>
+
+  <!-- PROGRESS OVERVIEW -->
+  <div class="section">
+    <div class="section-title">📊 Progress Overview</div>
+    <div class="card progress-card">
+      <div class="progress-stat"><div class="num" id="stat-total">5</div><div class="lbl">Total Tasks</div></div>
+      <div class="progress-stat"><div class="num" id="stat-done">0</div><div class="lbl">Completed</div></div>
+      <div class="progress-stat"><div class="num" id="stat-pending">5</div><div class="lbl">Pending</div></div>
+      <div class="progress-bar-track"><div class="progress-bar-fill" id="progress-fill"></div></div>
+      <div class="progress-stat"><div class="num" id="stat-pct">0%</div><div class="lbl">Done</div></div>
+    </div>
+    <div class="hint">Click any status badge in the Action Items table below to cycle its status.</div>
+  </div>
+
+  <!-- SUMMARY -->
+  <div class="section">
+    <div class="section-title">📋 Summary</div>
+    <div class="card">
+      The kickoff meeting for the CampusConnect Portal established that the first version must be completed before August 15, with dashboard and authentication marked as highest priority. Backend API work is mostly complete, but role-based authentication testing is still pending. UI designs are nearly finished, pending feedback from Anita. Database schema is finalized, but deployment is blocked until authentication testing completes. Documentation has not yet started and will begin once UI and API are stable. The team agreed to hold weekly review meetings every Friday.
+    </div>
+  </div>
+
+  <!-- KEY TAKEAWAYS -->
+  <div class="section">
+    <div class="section-title">✨ Key Takeaways</div>
+    <div class="grid">
+      <div class="card">
+        <div class="subheading">Deadline</div>
+        First version of CampusConnect Portal must be complete before August 15.
+      </div>
+      <div class="card">
+        <div class="subheading">Top Priority</div>
+        Dashboard and authentication are the highest priority items.
+      </div>
+      <div class="card">
+        <div class="subheading">Backend Status</div>
+        Backend API is mostly ready; role-based authentication testing still needed.
+      </div>
+      <div class="card">
+        <div class="subheading">Design Status</div>
+        UI designs are almost complete; some dashboard screens need Anita's feedback.
+      </div>
+      <div class="card">
+        <div class="subheading">Database</div>
+        Database schema is finalized.
+      </div>
+      <div class="card">
+        <div class="subheading">Deployment Dependency</div>
+        Deployment cannot start until authentication testing is complete.
+      </div>
+      <div class="card">
+        <div class="subheading">Documentation</div>
+        Documentation has not started; will begin once UI and API are stable.
+      </div>
+      <div class="card">
+        <div class="subheading">Requirements</div>
+        Mobile responsiveness is required before release. Error handling needs improvement.
+      </div>
+      <div class="card">
+        <div class="subheading">Scope Flexibility</div>
+        Analytics page may be postponed if time is limited.
+      </div>
+      <div class="card">
+        <div class="subheading">Cadence</div>
+        Weekly review meetings agreed upon, every Friday.
+      </div>
+    </div>
+  </div>
+
+  <!-- ACTION ITEMS -->
+  <div class="section">
+    <div class="section-title">✅ Action Items</div>
+    <input type="text" class="search-input" id="task-search" placeholder="🔍 Search tasks...">
+    <div class="filter-bar" id="owner-filters">
+      <button class="filter-btn active" data-owner="all">All Owners</button>
+      <button class="filter-btn" data-owner="Rahul">Rahul</button>
+      <button class="filter-btn" data-owner="Priya">Priya</button>
+      <button class="filter-btn" data-owner="Anita">Anita</button>
+      <button class="filter-btn" data-owner="Karan">Karan</button>
+      <button class="filter-btn" data-owner="Megha">Megha</button>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>Task</th>
+          <th>Owner</th>
+          <th>Deadline</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody id="task-tbody">
+        <tr class="task-row" data-owner="Rahul">
+          <td data-label="Task" class="task-name">Complete role-based authentication testing</td>
+          <td data-label="Owner"><span class="owner-chip">Rahul</span></td>
+          <td data-label="Deadline">July 30</td>
+          <td data-label="Status"><button class="badge badge-pending status-toggle">⏳ Pending</button></td>
+        </tr>
+        <tr class="task-row" data-owner="Priya">
+          <td data-label="Task" class="task-name">Share updated UI designs</td>
+          <td data-label="Owner"><span class="owner-chip">Priya</span></td>
+          <td data-label="Deadline">Today</td>
+          <td data-label="Status"><button class="badge badge-pending status-toggle">⏳ Pending</button></td>
+        </tr>
+        <tr class="task-row" data-owner="Anita">
+          <td data-label="Task" class="task-name">Review dashboard designs</td>
+          <td data-label="Owner"><span class="owner-chip">Anita</span></td>
+          <td data-label="Deadline">July 28</td>
+          <td data-label="Status"><button class="badge badge-pending status-toggle">⏳ Pending</button></td>
+        </tr>
+        <tr class="task-row" data-owner="Karan">
+          <td data-label="Task" class="task-name">Prepare deployment pipeline</td>
+          <td data-label="Owner"><span class="owner-chip">Karan</span></td>
+          <td data-label="Deadline">August 2</td>
+          <td data-label="Status"><button class="badge badge-pending status-toggle">⏳ Pending</button></td>
+        </tr>
+        <tr class="task-row" data-owner="Megha">
+          <td data-label="Task" class="task-name">Start project documentation</td>
+          <td data-label="Owner"><span class="owner-chip">Megha</span></td>
+          <td data-label="Deadline">After UI and API stabilization</td>
+          <td data-label="Status"><button class="badge badge-pending status-toggle">⏳ Pending</button></td>
+        </tr>
+      </tbody>
+    </table>
+    <div id="no-results" class="card" style="display:none;margin-top:12px;text-align:center;color:var(--text-secondary);">
+      No tasks match your search/filter.
+    </div>
+  </div>
+
+  <!-- OPEN QUESTIONS -->
+  <div class="section">
+    <div class="section-title">❓ Open Questions</div>
+    <div class="hint">Click a card to mark it as resolved/reviewed (visual only — for your own tracking).</div>
+    <div class="grid">
+      <div class="card question-card toggle-card">
+        <span class="badge badge-question">❓ Open Question</span>
+        <p>Should analytics be included in Version 1?</p>
+      </div>
+      <div class="card question-card toggle-card">
+        <span class="badge badge-question">❓ Open Question</span>
+        <p>Which hosting platform will be used?</p>
+      </div>
+      <div class="card question-card toggle-card">
+        <span class="badge badge-question">❓ Open Question</span>
+        <p>Who will perform final QA testing?</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- RISKS / BLOCKERS -->
+  <div class="section">
+    <div class="section-title">⚠️ Risks / Blockers</div>
+    <div class="grid">
+      <div class="card risk-card toggle-card">
+        <span class="badge badge-medium">🟠 Medium Priority</span>
+        <p>Delay in authentication testing will delay deployment.</p>
+      </div>
+      <div class="card risk-card toggle-card">
+        <span class="badge badge-medium">🟠 Medium Priority</span>
+        <p>Dashboard approval may take longer if feedback is delayed.</p>
+      </div>
+      <div class="card risk-card toggle-card">
+        <span class="badge badge-medium">🟠 Medium Priority</span>
+        <p>Documentation cannot begin until development stabilizes.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONFLICTS -->
+  <div class="section">
+    <div class="section-title">⚠️ Conflicts</div>
+    <div class="card conflict-card toggle-card">
+      <span class="badge badge-conflict">⚠️ Conflict</span>
+      <p>Deployment is planned for August 2, but backend authentication testing finishes on July 30. If testing is delayed, deployment must also move.</p>
+    </div>
+  </div>
+
+  <!-- SPEAKER BREAKDOWN (Transcript Mode) -->
+  <div class="section">
+    <div class="section-title">🗣️ Speaker Summary</div>
+    <div class="speaker-tabs" id="speaker-tabs">
+      <button class="speaker-tab-btn active" data-speaker="Anita">Anita</button>
+      <button class="speaker-tab-btn" data-speaker="Rahul">Rahul</button>
+      <button class="speaker-tab-btn" data-speaker="Priya">Priya</button>
+      <button class="speaker-tab-btn" data-speaker="Karan">Karan</button>
+      <button class="speaker-tab-btn" data-speaker="Megha">Megha</button>
+    </div>
+
+    <div class="speaker-panel active" data-speaker="Anita">
+      <div class="card speaker-card">
+        <div class="speaker-name">Anita</div>
+        <div class="speaker-summary">Stated the first version must be complete before August 15, with dashboard and authentication as highest priority.</div>
+        <div class="subheading">Decisions</div>
+        <ul style="margin:0;padding-left:18px;font-size:14px;">
+          <li>Dashboard and authentication set as top priority.</li>
+        </ul>
+        <div class="subheading">Action Items</div>
+        <ul style="margin:0;padding-left:18px;font-size:14px;">
+          <li>Review dashboard designs — Deadline: July 28</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="speaker-panel" data-speaker="Rahul">
+      <div class="card speaker-card">
+        <div class="speaker-name">Rahul</div>
+        <div class="speaker-summary">Reported backend API is mostly ready, but role-based authentication still needs testing; committed to finishing testing by July 30.</div>
+        <div class="subheading">Decisions</div>
+        <ul style="margin:0;padding-left:18px;font-size:14px;">
+          <li>Not specified</li>
+        </ul>
+        <div class="subheading">Action Items</div>
+        <ul style="margin:0;padding-left:18px;font-size:14px;">
+          <li>Complete role-based authentication testing — Deadline: July 30</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="speaker-panel" data-speaker="Priya">
+      <div class="card speaker-card">
+        <div class="speaker-name">Priya</div>
+        <div class="speaker-summary">Noted UI designs are almost complete, with some dashboard screens needing feedback from Anita; will send the latest Figma design today.</div>
+        <div class="subheading">Decisions</div>
+        <ul style="margin:0;padding-left:18px;font-size:14px;">
+          <li>Not specified</li>
+        </ul>
+        <div class="subheading">Action Items</div>
+        <ul style="margin:0;padding-left:18px;font-size:14px;">
+          <li>Share updated UI designs — Deadline: Today</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="speaker-panel" data-speaker="Karan">
+      <div class="card speaker-card">
+        <div class="speaker-name">Karan</div>
+        <div class="speaker-summary">Confirmed the database schema is finalized, but noted deployment cannot start until authentication testing is complete.</div>
+        <div class="subheading">Decisions</div>
+        <ul style="margin:0;padding-left:18px;font-size:14px;">
+          <li>Database schema finalized.</li>
+        </ul>
+        <div class="subheading">Action Items</div>
+        <ul style="margin:0;padding-left:18px;font-size:14px;">
+          <li>Prepare deployment pipeline — Deadline: August 2</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="speaker-panel" data-speaker="Megha">
+      <div class="card speaker-card">
+        <div class="speaker-name">Megha</div>
+        <div class="speaker-summary">Stated documentation has not started yet and will begin once the UI and API are stable.</div>
+        <div class="subheading">Decisions</div>
+        <ul style="margin:0;padding-left:18px;font-size:14px;">
+          <li>Not specified</li>
+        </ul>
+        <div class="subheading">Action Items</div>
+        <ul style="margin:0;padding-left:18px;font-size:14px;">
+          <li>Start project documentation — Deadline: After UI and API stabilization</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:16px;">
+      <div class="subheading">Attribution Notes</div>
+      The discussion points (authentication dependency on backend API, dashboard development starting immediately, mobile responsiveness requirement, error handling improvement, possible analytics postponement, and weekly Friday review meetings) were recorded under "Discussion" without an attributed speaker. Ownership for these points is not specified.
+    </div>
+  </div>
+
+  <!-- ADDITIONAL NOTES -->
+  <div class="section">
+    <div class="section-title">🗒️ Additional Notes</div>
+    <details class="collapsible" open>
+      <summary>Discussion Points & Supporting Context</summary>
+      <div class="content">
+        <ul>
+          <li>Authentication testing depends on backend API.</li>
+          <li>Dashboard development should begin immediately.</li>
+          <li>Mobile responsiveness is required before release.</li>
+          <li>Error handling needs improvement.</li>
+          <li>Analytics page may be postponed if time is limited.</li>
+          <li>Team agreed to conduct weekly review meetings every Friday.</li>
+          <li>Focus on security and responsive design.</li>
+          <li>Future versions may include notifications, attendance tracking, and event management.</li>
+        </ul>
+      </div>
+    </details>
+  </div>
+
+</div>
+
+<button class="back-to-top" id="back-to-top" title="Back to top">↑</button>
+
+<script>
+(function(){
+  // ---- Status toggle cycle: Pending -> Completed -> High Priority -> Pending ----
+  var statusCycle = [
+    {cls:"badge-pending", label:"⏳ Pending"},
+    {cls:"badge-completed", label:"✅ Completed"},
+    {cls:"badge-high", label:"🔴 High Priority"}
+  ];
+
+  function refreshStats(){
+    var rows = document.querySelectorAll(".task-row");
+    var total = rows.length;
+    var done = 0;
+    rows.forEach(function(r){
+      var btn = r.querySelector(".status-toggle");
+      if(btn && btn.textContent.indexOf("Completed") !== -1){ done++; }
+    });
+    var pending = total - done;
+    var pct = total ? Math.round((done/total)*100) : 0;
+    document.getElementById("stat-total").textContent = total;
+    document.getElementById("stat-done").textContent = done;
+    document.getElementById("stat-pending").textContent = pending;
+    document.getElementById("stat-pct").textContent = pct + "%";
+    document.getElementById("progress-fill").style.width = pct + "%";
+  }
+
+  document.querySelectorAll(".status-toggle").forEach(function(btn){
+    btn.addEventListener("click", function(){
+      var idx = statusCycle.findIndex(function(s){ return btn.classList.contains(s.cls); });
+      var next = statusCycle[(idx+1) % statusCycle.length];
+      statusCycle.forEach(function(s){ btn.classList.remove(s.cls); });
+      btn.classList.add(next.cls);
+      btn.textContent = next.label;
+      refreshStats();
+    });
+  });
+
+  refreshStats();
+
+  // ---- Owner filter ----
+  var ownerBtns = document.querySelectorAll("#owner-filters .filter-btn");
+  var searchInput = document.getElementById("task-search");
+
+  function applyFilters(){
+    var activeOwner = document.querySelector("#owner-filters .filter-btn.active").getAttribute("data-owner");
+    var query = searchInput.value.trim().toLowerCase();
+    var rows = document.querySelectorAll(".task-row");
+    var visibleCount = 0;
+
+    rows.forEach(function(row){
+      var owner = row.getAttribute("data-owner");
+      var text = row.querySelector(".task-name").textContent.toLowerCase();
+      var ownerMatch = (activeOwner === "all" || owner === activeOwner);
+      var searchMatch = (query === "" || text.indexOf(query) !== -1);
+      if(ownerMatch && searchMatch){
+        row.classList.remove("row-hidden");
+        visibleCount++;
+      } else {
+        row.classList.add("row-hidden");
+      }
+    });
+
+    document.getElementById("no-results").style.display = visibleCount === 0 ? "block" : "none";
+  }
+
+  ownerBtns.forEach(function(btn){
+    btn.addEventListener("click", function(){
+      ownerBtns.forEach(function(b){ b.classList.remove("active"); });
+      btn.classList.add("active");
+      applyFilters();
+    });
+  });
+
+  searchInput.addEventListener("input", applyFilters);
+
+  // ---- Speaker tabs ----
+  var tabBtns = document.querySelectorAll(".speaker-tab-btn");
+  var panels = document.querySelectorAll(".speaker-panel");
+
+  tabBtns.forEach(function(btn){
+    btn.addEventListener("click", function(){
+      var speaker = btn.getAttribute("data-speaker");
+      tabBtns.forEach(function(b){ b.classList.remove("active"); });
+      btn.classList.add("active");
+      panels.forEach(function(p){
+        p.classList.toggle("active", p.getAttribute("data-speaker") === speaker);
+      });
+    });
+  });
+
+  // ---- Toggle cards (questions / risks / conflicts) as reviewed ----
+  document.querySelectorAll(".toggle-card").forEach(function(card){
+    card.addEventListener("click", function(){
+      var alreadyAck = card.querySelector(".ack-tag");
+      if(alreadyAck){
+        alreadyAck.remove();
+        card.classList.remove("flagged-card");
+      } else {
+        var tag = document.createElement("div");
+        tag.className = "ack-tag";
+        tag.textContent = "✓ Reviewed";
+        card.appendChild(tag);
+        card.classList.add("flagged-card");
+      }
+    });
+  });
+
+  // ---- Back to top ----
+  var backBtn = document.getElementById("back-to-top");
+  window.addEventListener("scroll", function(){
+    if(window.scrollY > 300){
+      backBtn.classList.add("show");
+    } else {
+      backBtn.classList.remove("show");
+    }
+  });
+  backBtn.addEventListener("click", function(){
+    window.scrollTo({top:0, behavior:"smooth"});
+  });
+})();
+</script>
