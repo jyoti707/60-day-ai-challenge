@@ -1,0 +1,1525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Interactive Learning Studio — Arrays &amp; Sorting Algorithms</title>
+<style>
+  :root{
+    --bg: #0b0e14;
+    --bg-soft: #121722;
+    --panel: #161c2a;
+    --panel-2: #1b2233;
+    --line: #263048;
+    --text: #e7ecf7;
+    --text-dim: #9aa7c2;
+    --amber: #ffb454;
+    --cyan: #5fd4d6;
+    --violet: #9d8cff;
+    --green: #6fd68e;
+    --red: #ff7b7b;
+    --font-display: 'Iosevka Fixed', 'JetBrains Mono', 'Fira Code', ui-monospace, SFMono-Regular, Menlo, monospace;
+    --font-body: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', Helvetica, Arial, sans-serif;
+    --radius: 10px;
+    --shadow: 0 10px 30px rgba(0,0,0,0.35);
+  }
+  html[data-theme="light"]{
+    --bg: #f5f3ee;
+    --bg-soft: #ffffff;
+    --panel: #ffffff;
+    --panel-2: #f0eee7;
+    --line: #ddd8cb;
+    --text: #1c1f26;
+    --text-dim: #5a5f6e;
+    --shadow: 0 10px 30px rgba(0,0,0,0.08);
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--text);
+    font-family:var(--font-body);
+    line-height:1.6;
+    transition:background .3s ease,color .3s ease;
+  }
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:.001ms !important; transition-duration:.001ms !important;}
+  }
+  h1,h2,h3,h4{font-family:var(--font-display); letter-spacing:-0.01em; margin:0 0 .5em;}
+  code, .mono{font-family:var(--font-display);}
+  a{color:var(--cyan);}
+  ::selection{background:var(--amber); color:#1a1300;}
+
+  /* ---------- Top bar ---------- */
+  .topbar{
+    position:sticky; top:0; z-index:50;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:12px 24px;
+    background:rgba(11,14,20,0.85);
+    backdrop-filter: blur(10px);
+    border-bottom:1px solid var(--line);
+  }
+  html[data-theme="light"] .topbar{ background:rgba(245,243,238,0.9); }
+  .brand{display:flex; align-items:center; gap:10px; font-weight:700;}
+  .brand .mark{
+    width:28px;height:28px;border-radius:6px;
+    background:linear-gradient(135deg,var(--amber),var(--cyan));
+    display:flex;align-items:center;justify-content:center;
+    font-size:14px; color:#111;
+  }
+  .topbar-right{display:flex; align-items:center; gap:14px;}
+  .progress-pill{
+    display:flex; align-items:center; gap:8px;
+    font-size:12px; color:var(--text-dim);
+    background:var(--panel); border:1px solid var(--line);
+    padding:6px 12px; border-radius:20px;
+  }
+  .progress-track{width:120px; height:6px; background:var(--panel-2); border-radius:4px; overflow:hidden;}
+  .progress-fill{height:100%; width:0%; background:linear-gradient(90deg,var(--amber),var(--cyan)); transition:width .5s ease;}
+  .icon-btn{
+    background:var(--panel); border:1px solid var(--line); color:var(--text);
+    width:36px;height:36px;border-radius:8px; cursor:pointer;
+    display:flex;align-items:center;justify-content:center; font-size:16px;
+    transition:transform .15s ease, border-color .15s ease;
+  }
+  .icon-btn:hover{transform:translateY(-1px); border-color:var(--cyan);}
+  .icon-btn:focus-visible, button:focus-visible, a:focus-visible, input:focus-visible{outline:2px solid var(--cyan); outline-offset:2px;}
+
+  .wrap{max-width:980px; margin:0 auto; padding:0 24px;}
+
+  /* ---------- Hero ---------- */
+  .hero{
+    padding:64px 24px 40px;
+    position:relative;
+    overflow:hidden;
+    border-bottom:1px solid var(--line);
+  }
+  .hero-inner{max-width:980px; margin:0 auto; position:relative; z-index:2;}
+  .eyebrow{
+    font-family:var(--font-display); font-size:12px; letter-spacing:.12em; text-transform:uppercase;
+    color:var(--amber); margin-bottom:14px; display:flex; align-items:center; gap:8px;
+  }
+  .eyebrow::before{content:"▮▮▮▯"; letter-spacing:2px; color:var(--cyan);}
+  .hero h1{font-size:clamp(32px,5vw,52px); line-height:1.05; max-width:820px;}
+  .hero p.lead{color:var(--text-dim); font-size:18px; max-width:640px; margin-top:14px;}
+
+  .hero-bars{
+    display:flex; align-items:flex-end; gap:6px; height:90px; margin:36px 0 8px;
+  }
+  .hero-bars .bar{
+    width:16px; background:linear-gradient(180deg,var(--cyan),var(--violet));
+    border-radius:3px 3px 0 0;
+    animation: bar-sort 3.2s ease-in-out infinite;
+  }
+  @keyframes bar-sort{
+    0%,100%{ filter:brightness(1); }
+    50%{ filter:brightness(1.35); }
+  }
+
+  .meta-grid{
+    display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+    gap:14px; margin-top:32px;
+  }
+  .meta-card{
+    background:var(--panel); border:1px solid var(--line); border-radius:var(--radius);
+    padding:16px; 
+  }
+  .meta-card .label{font-size:11px; text-transform:uppercase; letter-spacing:.08em; color:var(--text-dim); margin-bottom:6px;}
+  .meta-card .value{font-family:var(--font-display); font-size:16px;}
+
+  .obj-list{list-style:none; margin:20px 0 0; padding:0; display:grid; gap:10px;}
+  .obj-list li{
+    display:flex; gap:10px; align-items:flex-start;
+    background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:12px 14px;
+  }
+  .obj-list li::before{content:"→"; color:var(--amber); font-family:var(--font-display); flex:none;}
+
+  .reward-box{
+    margin-top:24px; padding:16px 18px; border-radius:var(--radius);
+    border:1px dashed var(--amber); background:rgba(255,180,84,0.06);
+    display:flex; gap:14px; align-items:center; flex-wrap:wrap;
+  }
+  .reward-box .rb-icon{font-size:22px;}
+  .star-tally{display:flex; gap:4px; font-size:18px;}
+  .star{color:var(--line); transition:color .3s ease, transform .3s ease;}
+  .star.on{color:var(--amber); transform:scale(1.15);}
+
+  .start-btn{
+    margin-top:28px;
+    display:inline-flex; align-items:center; gap:10px;
+    background:linear-gradient(135deg,var(--amber),#ff9147);
+    color:#241300; border:none; font-weight:700; font-family:var(--font-display);
+    padding:14px 26px; border-radius:8px; cursor:pointer; font-size:15px;
+    box-shadow:0 8px 20px rgba(255,148,71,0.25);
+    transition:transform .15s ease;
+  }
+  .start-btn:hover{transform:translateY(-2px);}
+
+  /* ---------- Nav rail ---------- */
+  .module-nav{
+    display:flex; gap:8px; overflow-x:auto; padding:16px 24px;
+    border-bottom:1px solid var(--line); position:sticky; top:61px; z-index:40;
+    background:var(--bg);
+  }
+  .module-nav button{
+    flex:none; background:var(--panel); border:1px solid var(--line); color:var(--text-dim);
+    padding:8px 14px; border-radius:20px; font-size:13px; cursor:pointer; font-family:var(--font-body);
+    display:flex; align-items:center; gap:8px; transition:all .2s ease;
+  }
+  .module-nav button .dot{width:8px;height:8px;border-radius:50%; background:var(--line);}
+  .module-nav button.unlocked{color:var(--text);}
+  .module-nav button.unlocked .dot{background:var(--cyan);}
+  .module-nav button.complete .dot{background:var(--green);}
+  .module-nav button.active{border-color:var(--amber); color:var(--text);}
+  .module-nav button:disabled{cursor:not-allowed; opacity:.5;}
+
+  /* ---------- Sections / Modules ---------- */
+  section.module{
+    padding:56px 24px; border-bottom:1px solid var(--line);
+    display:none;
+  }
+  section.module.visible{display:block; animation: fade-in .5s ease;}
+  @keyframes fade-in{ from{opacity:0; transform:translateY(8px);} to{opacity:1; transform:translateY(0);} }
+
+  .module-head{max-width:980px; margin:0 auto 32px;}
+  .module-head .tag{
+    font-family:var(--font-display); font-size:12px; color:var(--violet);
+    text-transform:uppercase; letter-spacing:.1em;
+  }
+  .module-head h2{font-size:clamp(26px,4vw,36px); margin-top:8px;}
+  .module-head p{color:var(--text-dim); max-width:680px;}
+
+  .content-block{max-width:980px; margin:0 auto 28px;}
+  .card{
+    background:var(--panel); border:1px solid var(--line); border-radius:var(--radius);
+    padding:22px 24px; margin-bottom:20px;
+  }
+  .card h3{font-size:18px; display:flex; align-items:center; gap:10px;}
+  .card h3 .chip{
+    font-size:10px; text-transform:uppercase; letter-spacing:.08em;
+    background:var(--panel-2); border:1px solid var(--line); padding:3px 8px; border-radius:6px; color:var(--text-dim);
+  }
+
+  .two-col{display:grid; grid-template-columns:1fr 1fr; gap:20px;}
+  @media (max-width:760px){ .two-col{grid-template-columns:1fr;} }
+
+  pre{
+    background:var(--bg-soft); border:1px solid var(--line); border-radius:8px;
+    padding:16px; overflow-x:auto; font-size:13.5px; line-height:1.55;
+  }
+  code{font-size:.95em;}
+  .inline-code{background:var(--panel-2); padding:2px 6px; border-radius:4px; border:1px solid var(--line);}
+
+  .analogy{
+    border-left:3px solid var(--cyan); padding:14px 18px; background:rgba(95,212,214,0.06);
+    border-radius:0 8px 8px 0;
+  }
+  .analogy .tag-label{font-family:var(--font-display); font-size:11px; color:var(--cyan); text-transform:uppercase; letter-spacing:.08em; margin-bottom:6px;}
+
+  .misconception{
+    border-left:3px solid var(--red); padding:14px 18px; background:rgba(255,123,123,0.06);
+    border-radius:0 8px 8px 0; margin-bottom:12px;
+  }
+  .misconception .tag-label{font-family:var(--font-display); font-size:11px; color:var(--red); text-transform:uppercase; letter-spacing:.08em; margin-bottom:4px;}
+
+  .takeaways{
+    background:var(--panel-2); border:1px solid var(--line); border-radius:var(--radius); padding:20px 24px;
+  }
+  .takeaways ul{margin:0; padding-left:20px;}
+  .takeaways li{margin-bottom:6px;}
+
+  table{width:100%; border-collapse:collapse; font-size:14px;}
+  th,td{text-align:left; padding:10px 12px; border-bottom:1px solid var(--line);}
+  th{color:var(--text-dim); font-weight:600; font-size:12px; text-transform:uppercase; letter-spacing:.05em;}
+  tr:hover td{background:rgba(255,255,255,0.02);}
+
+  /* ---------- Visualizer (bars) ---------- */
+  .viz{
+    background:var(--bg-soft); border:1px solid var(--line); border-radius:var(--radius);
+    padding:20px;
+  }
+  .viz-controls{display:flex; flex-wrap:wrap; gap:10px; margin-bottom:16px; align-items:center;}
+  .viz-controls select, .viz-controls button, .viz-controls input[type=range]{
+    background:var(--panel); color:var(--text); border:1px solid var(--line); border-radius:6px;
+    padding:8px 10px; font-family:var(--font-body); font-size:13px; cursor:pointer;
+  }
+  .viz-controls button.primary{background:var(--cyan); color:#052426; border-color:var(--cyan); font-weight:700;}
+  .viz-stage{display:flex; align-items:flex-end; gap:4px; height:180px; padding:10px 4px; border-bottom:1px solid var(--line);}
+  .viz-stage .vbar{
+    flex:1; background:linear-gradient(180deg,var(--violet),var(--cyan)); border-radius:3px 3px 0 0;
+    transition:height .25s ease, background .25s ease; position:relative;
+  }
+  .viz-stage .vbar.compare{background:linear-gradient(180deg,var(--amber),#ff9147);}
+  .viz-stage .vbar.sorted{background:linear-gradient(180deg,var(--green),#4fbf72);}
+  .viz-status{margin-top:10px; font-family:var(--font-display); font-size:12.5px; color:var(--text-dim); min-height:18px;}
+
+  /* ---------- Exercise ---------- */
+  .exercise{
+    border:1px solid var(--line); border-radius:var(--radius); padding:20px 24px;
+    background:linear-gradient(180deg, rgba(157,140,255,0.05), transparent);
+  }
+  .exercise .tag-label{font-family:var(--font-display); font-size:11px; color:var(--violet); text-transform:uppercase; letter-spacing:.08em;}
+  .exercise textarea, .exercise input[type=text]{
+    width:100%; background:var(--bg-soft); color:var(--text); border:1px solid var(--line);
+    border-radius:8px; padding:12px; font-family:var(--font-display); font-size:13.5px; margin-top:10px;
+    resize:vertical;
+  }
+  .exercise-feedback{margin-top:10px; font-size:13.5px; padding:10px 12px; border-radius:8px; display:none;}
+  .exercise-feedback.show{display:block;}
+  .exercise-feedback.ok{background:rgba(111,214,142,0.12); color:var(--green); border:1px solid rgba(111,214,142,0.3);}
+  .exercise-feedback.no{background:rgba(255,123,123,0.12); color:var(--red); border:1px solid rgba(255,123,123,0.3);}
+  .btn{
+    background:var(--panel-2); border:1px solid var(--line); color:var(--text);
+    padding:9px 16px; border-radius:6px; cursor:pointer; font-size:13.5px; margin-top:12px;
+    font-family:var(--font-body); transition:all .15s ease;
+  }
+  .btn:hover{border-color:var(--cyan);}
+  .btn.primary{background:var(--cyan); color:#052426; border-color:var(--cyan); font-weight:700;}
+  .btn.primary:hover{filter:brightness(1.08);}
+  .btn:disabled{opacity:.45; cursor:not-allowed;}
+
+  /* ---------- Quiz ---------- */
+  .quiz-wrap{max-width:980px; margin:40px auto 0;}
+  .quiz-card{
+    background:var(--panel); border:1px solid var(--line); border-radius:var(--radius);
+    padding:24px; margin-bottom:16px;
+  }
+  .quiz-card .qn{font-size:11px; color:var(--violet); font-family:var(--font-display); text-transform:uppercase; letter-spacing:.08em; margin-bottom:6px;}
+  .quiz-card .qtext{font-size:16px; margin-bottom:14px;}
+  .quiz-options{display:grid; gap:10px;}
+  .qopt{
+    display:flex; align-items:center; gap:10px; text-align:left;
+    background:var(--panel-2); border:1px solid var(--line); border-radius:8px;
+    padding:12px 14px; cursor:pointer; font-size:14px; color:var(--text);
+    transition:all .15s ease; font-family:var(--font-body);
+  }
+  .qopt:hover{border-color:var(--cyan);}
+  .qopt.selected{border-color:var(--violet); background:rgba(157,140,255,0.08);}
+  .qopt.correct{border-color:var(--green); background:rgba(111,214,142,0.12);}
+  .qopt.incorrect{border-color:var(--red); background:rgba(255,123,123,0.12);}
+  .qopt:disabled{cursor:default;}
+  .qexplain{
+    margin-top:12px; padding:12px 14px; border-radius:8px; font-size:13.5px;
+    background:var(--bg-soft); border:1px solid var(--line); display:none;
+  }
+  .qexplain.show{display:block;}
+  .quiz-summary{
+    text-align:center; padding:30px; border-radius:var(--radius); border:1px solid var(--line);
+    background:var(--panel); display:none;
+  }
+  .quiz-summary.show{display:block; animation:fade-in .5s ease;}
+  .quiz-summary .score{font-family:var(--font-display); font-size:44px; color:var(--amber);}
+  .quiz-summary .msg{color:var(--text-dim); margin:8px 0 18px;}
+
+  /* ---------- Final / resources ---------- */
+  .resource-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:16px;}
+  .resource-card{background:var(--panel); border:1px solid var(--line); border-radius:var(--radius); padding:18px;}
+  .resource-card h4{font-size:14px; color:var(--cyan); margin-bottom:10px;}
+  .resource-card ul{margin:0; padding-left:18px; font-size:13.5px; color:var(--text-dim);}
+  .resource-card li{margin-bottom:6px;}
+  .kw-pill{display:inline-block; background:var(--panel-2); border:1px solid var(--line); padding:4px 10px; border-radius:14px; font-size:12px; margin:0 6px 6px 0; font-family:var(--font-display);}
+
+  .print-btn{margin-top:20px;}
+  @media print{
+    .topbar,.module-nav,.hero-bars,.start-btn,.viz-controls,button{display:none !important;}
+    section.module{display:block !important; break-inside:avoid;}
+    body{background:#fff; color:#000;}
+  }
+
+  footer{padding:40px 24px; text-align:center; color:var(--text-dim); font-size:13px;}
+
+  .cheat-grid{display:grid; grid-template-columns:1fr 1fr 1fr; gap:2px; background:var(--line); border:1px solid var(--line); border-radius:8px; overflow:hidden;}
+  .cheat-grid > div{background:var(--panel); padding:10px 12px; font-size:13px;}
+  .cheat-grid .head{background:var(--panel-2); font-weight:700; color:var(--amber); font-family:var(--font-display); font-size:12px;}
+  @media (max-width:700px){ .cheat-grid{grid-template-columns:1fr;} }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand"><div class="mark">⌁</div> Interactive Learning Studio</div>
+  <div class="topbar-right">
+    <div class="progress-pill">
+      <span id="progressLabel">0% complete</span>
+      <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+    </div>
+    <button class="icon-btn" id="themeToggle" title="Toggle light/dark mode" aria-label="Toggle theme">◐</button>
+    <button class="icon-btn" id="printBtn" title="Print / save notes" aria-label="Print notes">⎙</button>
+  </div>
+</div>
+
+<section class="hero">
+  <div class="hero-inner">
+    <div class="eyebrow">Data Structures &amp; Algorithms</div>
+    <h1>Arrays &amp; Sorting Algorithms</h1>
+    <p class="lead">A complete, hands-on tutorial on how arrays store data in memory and how the core sorting algorithms — bubble, selection, insertion, merge, and quick sort — bring order to that data. Watch every comparison and swap happen live.</p>
+
+    <div class="hero-bars" id="heroBars" aria-hidden="true"></div>
+
+    <div class="meta-grid">
+      <div class="meta-card"><div class="label">Estimated time</div><div class="value">70–90 min</div></div>
+      <div class="meta-card"><div class="label">Modules</div><div class="value">4 + final challenge</div></div>
+      <div class="meta-card"><div class="label">Prerequisites</div><div class="value">Basic programming syntax</div></div>
+      <div class="meta-card"><div class="label">Format</div><div class="value">Interactive + quizzes</div></div>
+    </div>
+
+    <h3 style="margin-top:32px; font-size:15px; color:var(--text-dim); text-transform:uppercase; letter-spacing:.06em;">Learning objectives</h3>
+    <ul class="obj-list">
+      <li>Understand how arrays are laid out in memory and why that gives O(1) indexed access.</li>
+      <li>Trace bubble, selection, and insertion sort step-by-step and reason about their time complexity.</li>
+      <li>Understand divide-and-conquer sorting through merge sort and quick sort, including recursion.</li>
+      <li>Compare algorithms by time complexity, space complexity, and stability to choose the right tool.</li>
+      <li>Apply sorting concepts to a practical challenge combining arrays with custom comparison logic.</li>
+    </ul>
+
+    <div class="reward-box">
+      <div class="rb-icon">🏆</div>
+      <div>
+        <div style="font-family:var(--font-display); font-size:13px; margin-bottom:4px;">Mastery stars — earn one per module by scoring 75%+ on its quiz</div>
+        <div class="star-tally" id="starTally">
+          <span class="star" data-star="1">★</span>
+          <span class="star" data-star="2">★</span>
+          <span class="star" data-star="3">★</span>
+          <span class="star" data-star="4">★</span>
+        </div>
+      </div>
+    </div>
+
+    <button class="start-btn" id="startBtn">Start Module 1 →</button>
+  </div>
+</section>
+
+<nav class="module-nav" id="moduleNav">
+  <button data-target="m1" class="active unlocked"><span class="dot"></span> 1 · Array Foundations</button>
+  <button data-target="m2" disabled><span class="dot"></span> 2 · Simple Sorts</button>
+  <button data-target="m3" disabled><span class="dot"></span> 3 · Divide &amp; Conquer</button>
+  <button data-target="m4" disabled><span class="dot"></span> 4 · Mastery &amp; Trade-offs</button>
+  <button data-target="mfinal" disabled><span class="dot"></span> Final Challenge</button>
+</nav>
+
+<!-- ============ MODULE 1 ============ -->
+<section class="module visible" id="m1">
+  <div class="module-head">
+    <div class="tag">Module 01 · Foundational</div>
+    <h2>Array Foundations</h2>
+    <p>Before sorting anything, you need a mental model of what an array actually is in memory, and why that model explains everything about its performance.</p>
+  </div>
+
+  <div class="content-block">
+    <div class="card">
+      <h3>What an array really is <span class="chip">Concept</span></h3>
+      <p>An array is a block of memory slots sitting <em>right next to each other</em>, all the same size, all holding the same type of value. Because the computer knows the starting address and the size of each slot, it can jump straight to element <span class="inline-code">i</span> using simple arithmetic: <span class="inline-code">address = start + i × elementSize</span>. No searching required — that's what makes indexed access O(1).</p>
+      <div id="memoryDiagram"></div>
+    </div>
+
+    <div class="two-col">
+      <div class="card analogy">
+        <div class="tag-label">Analogy</div>
+        <p>Think of an array like a row of numbered lockers in a school hallway. If you know locker #12 exists, you can walk straight to it — you don't check lockers 1 through 11 first. But if you want to insert a new locker in the middle of the row, every locker after it has to shift down one position to make room. That's an array: instant access, expensive insertion.</p>
+      </div>
+      <div class="card">
+        <h3>Static vs. dynamic arrays <span class="chip">Comparison</span></h3>
+        <table>
+          <tr><th></th><th>Static array</th><th>Dynamic array</th></tr>
+          <tr><td>Size</td><td>Fixed at creation</td><td>Grows automatically</td></tr>
+          <tr><td>Example</td><td><code>int arr[10]</code> (C)</td><td><code>list</code> (Python), <code>ArrayList</code> (Java)</td></tr>
+          <tr><td>Growth cost</td><td>N/A</td><td>Occasional O(n) resize</td></tr>
+          <tr><td>Access</td><td>O(1)</td><td>O(1)</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Core operations and their cost <span class="chip">Reference</span></h3>
+      <pre><code>arr = [4, 1, 7, 3]
+
+arr[2]            # read by index      -> O(1)
+arr.append(9)      # add to the end     -> O(1) amortized
+arr.insert(0, 99)  # add to the front   -> O(n), everything shifts right
+arr.pop()          # remove from end    -> O(1)
+arr.remove(7)       # search then remove -> O(n)
+7 in arr            # linear search      -> O(n)</code></pre>
+      <p>Notice the pattern: anything touching <strong>one end</strong> of the array is cheap. Anything touching the <strong>middle or front</strong> requires shifting every element after it, which is why insertion and removal in the middle cost O(n).</p>
+    </div>
+
+    <div class="card">
+      <h3 style="color:var(--red);">Common misconceptions</h3>
+      <div class="misconception">
+        <div class="tag-label">Misconception</div>
+        <p>"Arrays and lists are always the same thing." In many languages (Python, JavaScript) the built-in "list" is actually a dynamic array wrapper, but in others (like linked lists in Java's <code>LinkedList</code>) "list" refers to a completely different structure with different performance characteristics. Always check what's really backing the structure you're using.</p>
+      </div>
+      <div class="misconception">
+        <div class="tag-label">Misconception</div>
+        <p>"Indexing into an array searches through it." It doesn't — indexing is a direct address calculation, not a search. Searching (like <code>in</code> or <code>.index()</code>) is a completely different, slower operation.</p>
+      </div>
+    </div>
+
+    <div class="card exercise">
+      <div class="tag-label">Practical exercise</div>
+      <p><strong>Given an array of 6 elements, you insert one new element at index 0.</strong> How many existing elements have to shift, and what is the time complexity of this operation?</p>
+      <input type="text" id="ex1input" placeholder="Type your answer here...">
+      <button class="btn primary" id="ex1check">Check answer</button>
+      <div class="exercise-feedback" id="ex1feedback"></div>
+    </div>
+
+    <div class="card takeaways">
+      <h3>Key takeaways</h3>
+      <ul>
+        <li>Arrays store elements contiguously, enabling O(1) indexed access via address arithmetic.</li>
+        <li>End operations (append/pop) are cheap; front/middle operations (insert/remove) cost O(n) due to shifting.</li>
+        <li>Dynamic arrays (Python lists, JS arrays) resize automatically but occasionally pay an O(n) resize cost.</li>
+        <li>Understanding this memory model is the foundation for reasoning about every sorting algorithm's cost.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="quiz-wrap" id="quiz1"></div>
+</section>
+
+<!-- ============ MODULE 2 ============ -->
+<section class="module" id="m2">
+  <div class="module-head">
+    <div class="tag">Module 02 · Applied</div>
+    <h2>Simple Sorting Algorithms</h2>
+    <p>Now let's put arrays in motion. These three algorithms are the easiest to understand — and the best way to build real intuition for how "comparison and swap" logic sorts data.</p>
+  </div>
+
+  <div class="content-block">
+    <div class="card">
+      <h3>Bubble sort <span class="chip">Algorithm</span></h3>
+      <p>Bubble sort repeatedly walks through the array, comparing each pair of neighbors and swapping them if they're out of order. Large values "bubble up" toward the end with each pass.</p>
+      <pre><code>def bubble_sort(arr):
+    n = len(arr)
+    for i in range(n):
+        swapped = False
+        for j in range(0, n - i - 1):
+            if arr[j] > arr[j + 1]:
+                arr[j], arr[j + 1] = arr[j + 1], arr[j]
+                swapped = True
+        if not swapped:
+            break   # already sorted, stop early
+    return arr</code></pre>
+      <div class="analogy">
+        <div class="tag-label">Analogy</div>
+        <p>Picture a line of people ordering themselves by height. Bubble sort is two neighbors comparing themselves and swapping places if the taller one is standing in front — repeated over and over until nobody needs to swap anymore.</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Selection sort <span class="chip">Algorithm</span></h3>
+      <p>Selection sort finds the smallest remaining element and places it at the front, one position at a time. It makes far fewer swaps than bubble sort, but the same number of comparisons.</p>
+      <pre><code>def selection_sort(arr):
+    n = len(arr)
+    for i in range(n):
+        min_idx = i
+        for j in range(i + 1, n):
+            if arr[j] < arr[min_idx]:
+                min_idx = j
+        arr[i], arr[min_idx] = arr[min_idx], arr[i]
+    return arr</code></pre>
+    </div>
+
+    <div class="card">
+      <h3>Insertion sort <span class="chip">Algorithm</span></h3>
+      <p>Insertion sort builds the sorted array one element at a time, taking each new element and inserting it into its correct position among the already-sorted elements.</p>
+      <pre><code>def insertion_sort(arr):
+    for i in range(1, len(arr)):
+        key = arr[i]
+        j = i - 1
+        while j >= 0 and arr[j] > key:
+            arr[j + 1] = arr[j]
+            j -= 1
+        arr[j + 1] = key
+    return arr</code></pre>
+      <div class="analogy">
+        <div class="tag-label">Analogy</div>
+        <p>This is exactly how most people sort a hand of playing cards: pick up the next card and slide it into the correct spot among the cards you're already holding sorted.</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Watch it sort <span class="chip">Interactive visualizer</span></h3>
+      <div class="viz">
+        <div class="viz-controls">
+          <select id="algoSelect">
+            <option value="bubble">Bubble sort</option>
+            <option value="selection">Selection sort</option>
+            <option value="insertion">Insertion sort</option>
+          </select>
+          <button id="vizShuffle">🔀 New random array</button>
+          <label style="font-size:12px; color:var(--text-dim);">Speed
+            <input type="range" id="vizSpeed" min="10" max="500" value="150">
+          </label>
+          <button class="primary" id="vizRun">▶ Run</button>
+          <button id="vizReset">Reset</button>
+        </div>
+        <div class="viz-stage" id="vizStage"></div>
+        <div class="viz-status" id="vizStatus">Comparisons: 0 · Swaps: 0</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Comparing the three <span class="chip">Comparison</span></h3>
+      <table>
+        <tr><th>Algorithm</th><th>Best case</th><th>Average / Worst</th><th>Space</th><th>Stable?</th></tr>
+        <tr><td>Bubble sort</td><td>O(n)</td><td>O(n²)</td><td>O(1)</td><td>Yes</td></tr>
+        <tr><td>Selection sort</td><td>O(n²)</td><td>O(n²)</td><td>O(1)</td><td>No</td></tr>
+        <tr><td>Insertion sort</td><td>O(n)</td><td>O(n²)</td><td>O(1)</td><td>Yes</td></tr>
+      </table>
+      <p style="margin-top:10px; font-size:13.5px; color:var(--text-dim);">"Stable" means equal elements keep their original relative order — important when sorting records by one field while preserving a prior sort on another.</p>
+    </div>
+
+    <div class="card">
+      <h3 style="color:var(--red);">Common misconceptions</h3>
+      <div class="misconception">
+        <div class="tag-label">Misconception</div>
+        <p>"Bubble sort is always the worst choice." On a nearly-sorted array, bubble sort with an early-exit flag can finish in a single O(n) pass — sometimes faster in practice than an algorithm with a higher constant overhead.</p>
+      </div>
+      <div class="misconception">
+        <div class="tag-label">Misconception</div>
+        <p>"Selection sort and insertion sort are basically the same." Selection sort always scans the remaining unsorted section to find a minimum (fixed number of comparisons regardless of input order); insertion sort's work depends heavily on how sorted the input already is.</p>
+      </div>
+    </div>
+
+    <div class="card exercise">
+      <div class="tag-label">Practical exercise</div>
+      <p>Dry-run <strong>insertion sort</strong> on <span class="inline-code">[5, 2, 4, 1]</span> by hand. What does the array look like immediately after the element <code>2</code> has been inserted into its correct position?</p>
+      <input type="text" id="ex2input" placeholder="e.g. [2, 5, 4, 1]">
+      <button class="btn primary" id="ex2check">Check answer</button>
+      <div class="exercise-feedback" id="ex2feedback"></div>
+    </div>
+
+    <div class="card takeaways">
+      <h3>Key takeaways</h3>
+      <ul>
+        <li>Bubble, selection, and insertion sort are all O(n²) on average but differ in swap count, adaptivity, and stability.</li>
+        <li>Insertion sort is adaptive — it speeds up dramatically on nearly-sorted data.</li>
+        <li>Selection sort minimizes swaps, which matters when writes are expensive (e.g., flash memory).</li>
+        <li>All three sort "in place" using only O(1) extra memory.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="quiz-wrap" id="quiz2"></div>
+</section>
+
+<!-- ============ MODULE 3 ============ -->
+<section class="module" id="m3">
+  <div class="module-head">
+    <div class="tag">Module 03 · Advanced</div>
+    <h2>Divide &amp; Conquer Sorting</h2>
+    <p>To beat O(n²), we need a fundamentally different strategy: break the problem into smaller pieces, solve each piece, then combine the results.</p>
+  </div>
+
+  <div class="content-block">
+    <div class="card">
+      <h3>Merge sort <span class="chip">Algorithm</span></h3>
+      <p>Merge sort recursively splits the array in half until each piece has one element (trivially sorted), then merges pairs of sorted pieces back together in order.</p>
+      <pre><code>def merge_sort(arr):
+    if len(arr) <= 1:
+        return arr
+    mid = len(arr) // 2
+    left = merge_sort(arr[:mid])
+    right = merge_sort(arr[mid:])
+    return merge(left, right)
+
+def merge(left, right):
+    result, i, j = [], 0, 0
+    while i < len(left) and j < len(right):
+        if left[i] <= right[j]:
+            result.append(left[i]); i += 1
+        else:
+            result.append(right[j]); j += 1
+    result.extend(left[i:])
+    result.extend(right[j:])
+    return result</code></pre>
+      <div class="analogy">
+        <div class="tag-label">Analogy</div>
+        <p>Imagine two separate stacks of already-sorted exam papers. To merge them into one sorted stack, you just keep comparing the top paper of each stack and taking the smaller one — that's the "merge" step, and it only needs a single pass through both stacks.</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Quick sort <span class="chip">Algorithm</span></h3>
+      <p>Quick sort picks a "pivot" element, partitions the array so smaller elements land on the left and larger on the right of the pivot, then recursively sorts each side.</p>
+      <pre><code>def quick_sort(arr):
+    if len(arr) <= 1:
+        return arr
+    pivot = arr[len(arr) // 2]
+    left  = [x for x in arr if x < pivot]
+    mid   = [x for x in arr if x == pivot]
+    right = [x for x in arr if x > pivot]
+    return quick_sort(left) + mid + quick_sort(right)</code></pre>
+      <div class="analogy">
+        <div class="tag-label">Analogy</div>
+        <p>Think of sorting a deck of mixed cards by picking one card as a reference, tossing every lower card to a "left" pile and every higher card to a "right" pile, then repeating the trick on each pile separately.</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Recursion tree <span class="chip">Diagram</span></h3>
+      <div id="recursionDiagram"></div>
+      <p style="font-size:13.5px; color:var(--text-dim); margin-top:8px;">Each level of the tree does O(n) total work across all its nodes. With O(log n) levels, the total work is O(n log n) — the key reason divide-and-conquer sorts outperform the simple O(n²) sorts on large inputs.</p>
+    </div>
+
+    <div class="card">
+      <h3>Watch it sort <span class="chip">Interactive visualizer</span></h3>
+      <div class="viz">
+        <div class="viz-controls">
+          <select id="algoSelect2">
+            <option value="merge">Merge sort</option>
+            <option value="quick">Quick sort</option>
+          </select>
+          <button id="vizShuffle2">🔀 New random array</button>
+          <label style="font-size:12px; color:var(--text-dim);">Speed
+            <input type="range" id="vizSpeed2" min="10" max="500" value="150">
+          </label>
+          <button class="primary" id="vizRun2">▶ Run</button>
+          <button id="vizReset2">Reset</button>
+        </div>
+        <div class="viz-stage" id="vizStage2"></div>
+        <div class="viz-status" id="vizStatus2">Comparisons: 0 · Merges/Partitions: 0</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Merge sort vs. quick sort <span class="chip">Comparison</span></h3>
+      <table>
+        <tr><th></th><th>Merge sort</th><th>Quick sort</th></tr>
+        <tr><td>Average time</td><td>O(n log n)</td><td>O(n log n)</td></tr>
+        <tr><td>Worst time</td><td>O(n log n)</td><td>O(n²) — bad pivot choices</td></tr>
+        <tr><td>Extra space</td><td>O(n)</td><td>O(log n) typical</td></tr>
+        <tr><td>Stable?</td><td>Yes</td><td>No (standard version)</td></tr>
+        <tr><td>Good for</td><td>Linked lists, external sorting, guaranteed performance</td><td>In-memory arrays, typically faster in practice</td></tr>
+      </table>
+    </div>
+
+    <div class="card">
+      <h3 style="color:var(--red);">Common misconceptions</h3>
+      <div class="misconception">
+        <div class="tag-label">Misconception</div>
+        <p>"Quick sort is always faster because it says 'quick.'" Its worst case is O(n²), which happens with poor pivot choices (e.g., always picking the first element on an already-sorted array). Merge sort guarantees O(n log n) no matter what.</p>
+      </div>
+      <div class="misconception">
+        <div class="tag-label">Misconception</div>
+        <p>"Divide and conquer means the algorithm uses no extra memory." Merge sort explicitly needs O(n) auxiliary space to hold the merged results — the recursion itself isn't free either, it needs O(log n) stack space.</p>
+      </div>
+    </div>
+
+    <div class="card exercise">
+      <div class="tag-label">Practical exercise</div>
+      <p>You need to sort 10 million records from disk, and memory is limited. Which of the two algorithms in this module is the standard choice for "external sorting," and briefly explain why in one sentence.</p>
+      <textarea id="ex3input" rows="2" placeholder="Type your reasoning..."></textarea>
+      <button class="btn primary" id="ex3check">Check answer</button>
+      <div class="exercise-feedback" id="ex3feedback"></div>
+    </div>
+
+    <div class="card takeaways">
+      <h3>Key takeaways</h3>
+      <ul>
+        <li>Divide-and-conquer sorts split the problem, solve recursively, and combine — yielding O(n log n) performance.</li>
+        <li>Merge sort guarantees O(n log n) but costs O(n) extra space; it's the standard for external/linked-list sorting.</li>
+        <li>Quick sort is typically faster in practice with O(log n) space, but risks O(n²) on adversarial or poorly-pivoted input.</li>
+        <li>Neither simple sort (Module 2) nor divide-and-conquer sort is "always best" — the right choice depends on data size, memory, and stability needs.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="quiz-wrap" id="quiz3"></div>
+</section>
+
+<!-- ============ MODULE 4 ============ -->
+<section class="module" id="m4">
+  <div class="module-head">
+    <div class="tag">Module 04 · Mastery</div>
+    <h2>Trade-offs, Stability &amp; Real-World Use</h2>
+    <p>The final concept layer: knowing every algorithm's mechanics is only half the job. Real mastery is knowing which one to reach for, and why.</p>
+  </div>
+
+  <div class="content-block">
+    <div class="card">
+      <h3>Big-picture comparison <span class="chip">Reference</span></h3>
+      <table>
+        <tr><th>Algorithm</th><th>Best</th><th>Average</th><th>Worst</th><th>Space</th><th>Stable</th><th>In-place</th></tr>
+        <tr><td>Bubble</td><td>O(n)</td><td>O(n²)</td><td>O(n²)</td><td>O(1)</td><td>Yes</td><td>Yes</td></tr>
+        <tr><td>Selection</td><td>O(n²)</td><td>O(n²)</td><td>O(n²)</td><td>O(1)</td><td>No</td><td>Yes</td></tr>
+        <tr><td>Insertion</td><td>O(n)</td><td>O(n²)</td><td>O(n²)</td><td>O(1)</td><td>Yes</td><td>Yes</td></tr>
+        <tr><td>Merge</td><td>O(n log n)</td><td>O(n log n)</td><td>O(n log n)</td><td>O(n)</td><td>Yes</td><td>No</td></tr>
+        <tr><td>Quick</td><td>O(n log n)</td><td>O(n log n)</td><td>O(n²)</td><td>O(log n)</td><td>No</td><td>Yes</td></tr>
+      </table>
+    </div>
+
+    <div class="card">
+      <h3>Why "stability" matters <span class="chip">Concept</span></h3>
+      <p>Imagine sorting a list of orders by <em>date</em>, and the list was already sorted by <em>customer name</em>. A stable sort keeps orders from the same customer, on the same date, in their original name order. An unstable sort could scramble that secondary ordering — a subtle bug that only shows up when you sort by multiple fields in sequence.</p>
+      <div class="analogy">
+        <div class="tag-label">Analogy</div>
+        <p>Picture re-sorting a shelf of books by author, when they're already sorted by title. Stability guarantees that two books by the same author stay in title order — nothing "hops over" its equal-ranked neighbor.</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>How real languages actually sort <span class="chip">Applied</span></h3>
+      <p>Most languages don't ship a single naive algorithm — they use hybrids tuned for real-world data:</p>
+      <table>
+        <tr><th>Language</th><th>Default sort</th><th>Why</th></tr>
+        <tr><td>Python</td><td>Timsort</td><td>Merge sort + insertion sort hybrid; excellent on partially-sorted real data</td></tr>
+        <tr><td>Java</td><td>Timsort (objects) / Dual-pivot quicksort (primitives)</td><td>Stability required for objects; raw speed for primitives</td></tr>
+        <tr><td>C++ std::sort</td><td>Introsort</td><td>Quicksort that falls back to heapsort to avoid the O(n²) worst case</td></tr>
+      </table>
+      <p style="margin-top:10px;">This is the practical lesson: production sorting functions blend the algorithms in this tutorial to get the best of each.</p>
+    </div>
+
+    <div class="card">
+      <h3>Choosing the right algorithm <span class="chip">Decision guide</span></h3>
+      <div class="two-col">
+        <div class="analogy">
+          <div class="tag-label">Use insertion sort when</div>
+          <p>The array is small (roughly &lt;20 elements) or nearly sorted already — its low overhead wins over asymptotically faster options.</p>
+        </div>
+        <div class="analogy">
+          <div class="tag-label">Use merge sort when</div>
+          <p>You need guaranteed O(n log n), stability, or you're sorting a linked list / external data that doesn't fit in memory.</p>
+        </div>
+        <div class="analogy">
+          <div class="tag-label">Use quick sort when</div>
+          <p>You're sorting a large in-memory array and want the fastest typical performance with minimal extra space.</p>
+        </div>
+        <div class="analogy">
+          <div class="tag-label">Avoid bubble/selection when</div>
+          <p>The dataset is large — their O(n²) behavior with no practical advantage makes them mainly educational tools.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3 style="color:var(--red);">Common misconceptions</h3>
+      <div class="misconception">
+        <div class="tag-label">Misconception</div>
+        <p>"O(n log n) is the fastest possible sort." For comparison-based sorting, yes — that's the proven lower bound. But non-comparison sorts like counting sort or radix sort can achieve O(n) under specific conditions (small integer ranges, fixed-width keys).</p>
+      </div>
+      <div class="misconception">
+        <div class="tag-label">Misconception</div>
+        <p>"The built-in sort() is always the best choice, so algorithm choice never matters." Understanding these trade-offs matters whenever you're choosing data structures, designing algorithms for constrained environments, or debugging unexpected performance in production.</p>
+      </div>
+    </div>
+
+    <div class="card exercise">
+      <div class="tag-label">Practical exercise</div>
+      <p>You're sorting a live leaderboard of 50 players by score, updated every few seconds, where scores are almost always nearly sorted already from the previous update. Which algorithm from this tutorial best fits, and why?</p>
+      <textarea id="ex4input" rows="2" placeholder="Type your reasoning..."></textarea>
+      <button class="btn primary" id="ex4check">Check answer</button>
+      <div class="exercise-feedback" id="ex4feedback"></div>
+    </div>
+
+    <div class="card takeaways">
+      <h3>Key takeaways</h3>
+      <ul>
+        <li>Real-world sorts (Timsort, Introsort) are hybrids of the algorithms taught in this tutorial, chosen to exploit real data patterns.</li>
+        <li>Stability is a silent but critical property when sorting by multiple keys in sequence.</li>
+        <li>The "best" algorithm depends on data size, memory constraints, stability needs, and how sorted the input already is.</li>
+        <li>O(n log n) is the proven floor for comparison-based sorting — non-comparison sorts can beat it under special conditions.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="quiz-wrap" id="quiz4"></div>
+</section>
+
+<!-- ============ FINAL CHALLENGE ============ -->
+<section class="module" id="mfinal">
+  <div class="module-head">
+    <div class="tag">Final Challenge</div>
+    <h2>Put it all together</h2>
+    <p>One last hands-on challenge, then your reference materials to keep.</p>
+  </div>
+
+  <div class="content-block">
+    <div class="card exercise">
+      <div class="tag-label">Final practical challenge</div>
+      <p><strong>Design a custom sort:</strong> You have an array of student records, each with a <code>grade</code> (A–F) and a <code>submittedAt</code> timestamp. Write pseudocode (or real code) for sorting them so all A's come first, then B's, etc., and within the same grade, earlier submissions come first — using one of the stable algorithms from this tutorial as your base.</p>
+      <textarea id="finalinput" rows="6" placeholder="Write your approach here..."></textarea>
+      <button class="btn primary" id="finalcheck">Check my approach</button>
+      <div class="exercise-feedback" id="finalfeedback"></div>
+    </div>
+
+    <div class="card">
+      <h3>Cheat sheet</h3>
+      <div class="cheat-grid">
+        <div class="head">Algorithm</div><div class="head">Best use case</div><div class="head">Complexity (avg)</div>
+        <div>Bubble sort</div><div>Teaching / tiny, nearly-sorted arrays</div><div>O(n²)</div>
+        <div>Selection sort</div><div>Minimizing number of swaps</div><div>O(n²)</div>
+        <div>Insertion sort</div><div>Small or nearly-sorted arrays</div><div>O(n²), O(n) best case</div>
+        <div>Merge sort</div><div>Guaranteed performance, stability, linked lists</div><div>O(n log n)</div>
+        <div>Quick sort</div><div>Large in-memory arrays, general purpose</div><div>O(n log n)</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Summary notes</h3>
+      <ul>
+        <li>Arrays give O(1) indexed access via contiguous memory, but O(n) insert/remove away from the end.</li>
+        <li>Simple sorts (bubble, selection, insertion) are O(n²) but simple, in-place, and sometimes adaptive.</li>
+        <li>Divide-and-conquer sorts (merge, quick) achieve O(n log n) by splitting, solving, and combining.</li>
+        <li>Stability preserves relative order of equal elements — critical for multi-key sorts.</li>
+        <li>Production languages use hybrid algorithms (Timsort, Introsort) that blend these ideas.</li>
+      </ul>
+      <button class="btn print-btn" id="printBtn2">🖨 Print / save these notes</button>
+    </div>
+
+    <h3 style="max-width:980px;margin:36px auto 16px;">Continue learning</h3>
+    <div class="resource-grid">
+      <div class="resource-card">
+        <h4>📚 Books</h4>
+        <ul>
+          <li>"Introduction to Algorithms" — Cormen, Leiserson, Rivest, Stein (CLRS)</li>
+          <li>"Grokking Algorithms" — Aditya Bhargava</li>
+          <li>"The Algorithm Design Manual" — Steven Skiena</li>
+        </ul>
+      </div>
+      <div class="resource-card">
+        <h4>📄 Research &amp; documentation</h4>
+        <ul>
+          <li>Timsort's original design description (Python core developer notes)</li>
+          <li>"Engineering a Sort Function" — Bentley &amp; McIlroy (Introsort foundations)</li>
+          <li>Language docs: Python <code>sort()</code>, Java <code>Arrays.sort()</code>, C++ <code>std::sort</code></li>
+        </ul>
+      </div>
+      <div class="resource-card">
+        <h4>💬 Communities</h4>
+        <ul>
+          <li>r/algorithms and r/learnprogramming</li>
+          <li>Stack Overflow — [sorting] and [algorithm] tags</li>
+          <li>Computer Science Stack Exchange</li>
+        </ul>
+      </div>
+      <div class="resource-card">
+        <h4>🧪 Practice platforms</h4>
+        <ul>
+          <li>LeetCode — Sorting &amp; Arrays study plan</li>
+          <li>HackerRank — Sorting domain</li>
+          <li>VisuAlgo.net — algorithm visualizations</li>
+        </ul>
+      </div>
+      <div class="resource-card">
+        <h4>🔍 Search keywords</h4>
+        <p>
+          <span class="kw-pill">in-place sorting</span>
+          <span class="kw-pill">stable sort algorithm</span>
+          <span class="kw-pill">Timsort explained</span>
+          <span class="kw-pill">quicksort worst case</span>
+          <span class="kw-pill">O(n log n) proof</span>
+        </p>
+      </div>
+      <div class="resource-card">
+        <h4>🤖 AI prompts for further learning</h4>
+        <ul>
+          <li>"Explain heap sort the same way you explained merge sort, with a diagram."</li>
+          <li>"Compare Timsort and Introsort in depth with real benchmarks."</li>
+          <li>"Give me 5 LeetCode-style array problems that build on sorting."</li>
+          <li>"Show me how radix sort achieves O(n) and where it breaks down."</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>Interactive Learning Studio — built for one-sitting mastery of Arrays &amp; Sorting Algorithms.</footer>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ---------------- Theme ---------------- */
+  const themeToggle = document.getElementById('themeToggle');
+  themeToggle.addEventListener('click', ()=>{
+    const html = document.documentElement;
+    const cur = html.getAttribute('data-theme');
+    html.setAttribute('data-theme', cur === 'light' ? 'dark' : 'light');
+    themeToggle.textContent = cur === 'light' ? '◐' : '◑';
+  });
+
+  document.getElementById('printBtn').addEventListener('click', ()=>window.print());
+  document.getElementById('printBtn2').addEventListener('click', ()=>window.print());
+
+  /* ---------------- Hero decorative bars ---------------- */
+  const heroBars = document.getElementById('heroBars');
+  const heights = [30,55,20,70,45,90,35,60,25,80,50,65];
+  heights.forEach((h,i)=>{
+    const d = document.createElement('div');
+    d.className='bar';
+    d.style.height = h+'px';
+    d.style.animationDelay = (i*0.12)+'s';
+    heroBars.appendChild(d);
+  });
+
+  /* ---------------- Memory diagram (Module 1) ---------------- */
+  const memDiagram = document.getElementById('memoryDiagram');
+  (function(){
+    const vals = [12, 47, 3, 88, 25];
+    let html = '<svg viewBox="0 0 560 120" width="100%" style="max-width:560px;display:block;margin:12px auto;" xmlns="http://www.w3.org/2000/svg">';
+    vals.forEach((v,i)=>{
+      const x = 10 + i*108;
+      html += `<rect x="${x}" y="20" width="98" height="60" rx="6" fill="none" stroke="#5fd4d6" stroke-width="2"/>`;
+      html += `<text x="${x+49}" y="55" text-anchor="middle" font-family="monospace" font-size="20" fill="currentColor">${v}</text>`;
+      html += `<text x="${x+49}" y="98" text-anchor="middle" font-family="monospace" font-size="11" fill="#9aa7c2">arr[${i}]</text>`;
+      html += `<text x="${x+49}" y="14" text-anchor="middle" font-family="monospace" font-size="10" fill="#ffb454">0x${(1000+i*4).toString(16)}</text>`;
+    });
+    html += '</svg>';
+    memDiagram.innerHTML = html;
+    memDiagram.querySelectorAll('text[fill="currentColor"]').forEach(t=>t.style.fill='var(--text)');
+  })();
+
+  /* ---------------- Recursion diagram (Module 3) ---------------- */
+  const recDiagram = document.getElementById('recursionDiagram');
+  (function(){
+    const svg = `<svg viewBox="0 0 640 220" width="100%" style="max-width:640px;display:block;margin:12px auto;" xmlns="http://www.w3.org/2000/svg">
+      <g font-family="monospace" font-size="12" text-anchor="middle">
+        <rect x="260" y="10" width="120" height="34" rx="6" fill="none" stroke="#9d8cff" stroke-width="2"/>
+        <text x="320" y="32" fill="var(--text)">[5,3,8,1,9,2]</text>
+
+        <line x1="290" y1="44" x2="180" y2="76" stroke="#263048" stroke-width="2"/>
+        <line x1="350" y1="44" x2="460" y2="76" stroke="#263048" stroke-width="2"/>
+
+        <rect x="120" y="76" width="120" height="34" rx="6" fill="none" stroke="#5fd4d6" stroke-width="2"/>
+        <text x="180" y="98" fill="var(--text)">[5,3,8]</text>
+        <rect x="400" y="76" width="120" height="34" rx="6" fill="none" stroke="#5fd4d6" stroke-width="2"/>
+        <text x="460" y="98" fill="var(--text)">[1,9,2]</text>
+
+        <line x1="150" y1="110" x2="80" y2="142" stroke="#263048" stroke-width="2"/>
+        <line x1="210" y1="110" x2="260" y2="142" stroke="#263048" stroke-width="2"/>
+        <line x1="430" y1="110" x2="380" y2="142" stroke="#263048" stroke-width="2"/>
+        <line x1="490" y1="110" x2="560" y2="142" stroke="#263048" stroke-width="2"/>
+
+        <rect x="30" y="142" width="100" height="30" rx="6" fill="none" stroke="#ffb454" stroke-width="2"/>
+        <text x="80" y="162" fill="var(--text)">[5,3]</text>
+        <rect x="220" y="142" width="80" height="30" rx="6" fill="none" stroke="#ffb454" stroke-width="2"/>
+        <text x="260" y="162" fill="var(--text)">[8]</text>
+        <rect x="330" y="142" width="100" height="30" rx="6" fill="none" stroke="#ffb454" stroke-width="2"/>
+        <text x="380" y="162" fill="var(--text)">[1,9]</text>
+        <rect x="510" y="142" width="80" height="30" rx="6" fill="none" stroke="#ffb454" stroke-width="2"/>
+        <text x="560" y="162" fill="var(--text)">[2]</text>
+
+        <text x="320" y="205" fill="#9aa7c2" font-size="12">Base case: arrays of length 1 are already sorted — merge back up</text>
+      </g>
+    </svg>`;
+    recDiagram.innerHTML = svg;
+  })();
+
+  /* ---------------- Progress / navigation ---------------- */
+  const modules = ['m1','m2','m3','m4','mfinal'];
+  const navButtons = Array.from(document.querySelectorAll('.module-nav button'));
+  let unlocked = {m1:true, m2:false, m3:false, m4:false, mfinal:false};
+  let completed = {m1:false, m2:false, m3:false, m4:false};
+
+  function updateProgress(){
+    const doneCount = Object.values(completed).filter(Boolean).length;
+    const pct = Math.round((doneCount/4)*100);
+    document.getElementById('progressFill').style.width = pct+'%';
+    document.getElementById('progressLabel').textContent = pct+'% complete';
+  }
+
+  function showModule(id){
+    document.querySelectorAll('section.module').forEach(s=>s.classList.remove('visible'));
+    document.getElementById(id).classList.add('visible');
+    navButtons.forEach(b=>b.classList.toggle('active', b.dataset.target===id));
+    window.scrollTo({top: document.getElementById(id).offsetTop - 110, behavior:'smooth'});
+  }
+
+  navButtons.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const t = btn.dataset.target;
+      if(unlocked[t]) showModule(t);
+    });
+  });
+
+  function unlockNext(afterId){
+    const order = ['m1','m2','m3','m4','mfinal'];
+    const idx = order.indexOf(afterId);
+    if(idx>=0 && idx<order.length-1){
+      const next = order[idx+1];
+      unlocked[next]=true;
+      const btn = navButtons.find(b=>b.dataset.target===next);
+      btn.disabled=false; btn.classList.add('unlocked');
+    }
+    const curBtn = navButtons.find(b=>b.dataset.target===afterId);
+    curBtn.classList.add('complete');
+  }
+
+  document.getElementById('startBtn').addEventListener('click', ()=>showModule('m1'));
+
+  /* ---------------- Stars ---------------- */
+  function setStar(n){
+    const s = document.querySelector(`.star[data-star="${n}"]`);
+    if(s) s.classList.add('on');
+  }
+
+  /* ================= EXERCISES ================= */
+  function checkExercise(inputId, feedbackId, validator, correctMsg, incorrectMsg){
+    const input = document.getElementById(inputId);
+    const fb = document.getElementById(feedbackId);
+    const val = input.value.trim();
+    if(!val){
+      fb.textContent = "Please write an answer first.";
+      fb.className = 'exercise-feedback show no';
+      return;
+    }
+    const ok = validator(val.toLowerCase());
+    fb.textContent = ok ? correctMsg : incorrectMsg;
+    fb.className = 'exercise-feedback show ' + (ok ? 'ok':'no');
+  }
+
+  document.getElementById('ex1check').addEventListener('click', ()=>{
+    checkExercise('ex1input','ex1feedback',
+      v => (v.includes('6') || v.includes('all')) && (v.includes('o(n)') || v.includes('on') || v.includes('linear')),
+      "Correct — all 6 existing elements shift right by one position, making this an O(n) operation.",
+      "Not quite. Inserting at index 0 shifts every one of the 6 existing elements — that's O(n), the worst case for insertion."
+    );
+  });
+  document.getElementById('ex2check').addEventListener('click', ()=>{
+    checkExercise('ex2input','ex2feedback',
+      v => v.replace(/\s/g,'').includes('2,5,4,1'),
+      "Correct — insertion sort takes the 2nd element (2), compares it to 5, and slides 5 right to insert 2 in front: [2, 5, 4, 1].",
+      "Not quite. Starting from [5, 2, 4, 1], insertion sort compares 2 with 5, finds 2 is smaller, and inserts it before 5: [2, 5, 4, 1]."
+    );
+  });
+  document.getElementById('ex3check').addEventListener('click', ()=>{
+    checkExercise('ex3input','ex3feedback',
+      v => v.includes('merge'),
+      "Correct — merge sort is the standard for external sorting because it processes data in sequential chunks and only needs to hold a few chunks in memory at once, unlike quicksort's less predictable access pattern.",
+      "The standard answer is merge sort — its sequential, chunk-based merging process is well suited to reading and writing data from disk in manageable pieces."
+    );
+  });
+  document.getElementById('ex4check').addEventListener('click', ()=>{
+    checkExercise('ex4input','ex4feedback',
+      v => v.includes('insertion'),
+      "Correct — insertion sort is adaptive, so on a nearly-sorted leaderboard it runs close to O(n) per update instead of paying the full O(n²) or O(n log n) cost every time.",
+      "The best fit is insertion sort: because the leaderboard is already nearly sorted between updates, insertion sort's adaptive behavior makes each re-sort very fast."
+    );
+  });
+  document.getElementById('finalcheck').addEventListener('click', ()=>{
+    const input = document.getElementById('finalinput');
+    const fb = document.getElementById('finalfeedback');
+    const val = input.value.trim().toLowerCase();
+    if(!val){
+      fb.textContent = "Write your approach first — there's no single correct wording, just explain your reasoning.";
+      fb.className = 'exercise-feedback show no';
+      return;
+    }
+    const mentionsStable = val.includes('stable') || val.includes('merge') || val.includes('insertion') || val.includes('order');
+    fb.textContent = mentionsStable
+      ? "Good thinking. A model approach: use a stable sort (merge sort or Timsort) keyed primarily on grade (A→F) — because it's stable, records with the same grade automatically stay ordered by their original submittedAt order, with no extra logic needed."
+      : "Consider this: because you need a two-level order (grade first, then submission time), a stable sort keyed only on grade automatically preserves submittedAt order for ties. Try mentioning stability in your approach.";
+    fb.className = 'exercise-feedback show ok';
+  });
+
+  /* ================= SORT VISUALIZERS ================= */
+  function randomArray(n, max){
+    const a=[];
+    for(let i=0;i<n;i++) a.push(2+Math.floor(Math.random()*max));
+    return a;
+  }
+
+  function makeViz(stageId, statusId){
+    const stage = document.getElementById(stageId);
+    const status = document.getElementById(statusId);
+    let arr = randomArray(16, 90);
+    let running = false;
+
+    function render(highlightIdx=[], sortedFrom=Infinity){
+      stage.innerHTML='';
+      const maxV = Math.max(...arr);
+      arr.forEach((v,i)=>{
+        const bar = document.createElement('div');
+        bar.className='vbar';
+        if(i>=sortedFrom) bar.classList.add('sorted');
+        else if(highlightIdx.includes(i)) bar.classList.add('compare');
+        bar.style.height = (v/maxV*100)+'%';
+        stage.appendChild(bar);
+      });
+    }
+    render();
+    return {
+      getArr:()=>arr,
+      setArr:(a)=>{arr=a; render();},
+      render,
+      isRunning:()=>running,
+      setRunning:(r)=>running=r,
+      status
+    };
+  }
+
+  const viz1 = makeViz('vizStage','vizStatus');
+  const viz2 = makeViz('vizStage2','vizStatus2');
+
+  function delay(ms){ return new Promise(res=>setTimeout(res,ms)); }
+
+  async function bubbleSortViz(v, speedEl){
+    let arr = v.getArr().slice();
+    let comparisons=0, swaps=0;
+    const n = arr.length;
+    for(let i=0;i<n;i++){
+      let swappedAny=false;
+      for(let j=0;j<n-i-1;j++){
+        if(!v.isRunning()) return;
+        comparisons++;
+        v.status.textContent = `Comparisons: ${comparisons} · Swaps: ${swaps}`;
+        v.render([j,j+1], n-i);
+        await delay(510 - speedEl.value);
+        if(arr[j]>arr[j+1]){
+          [arr[j],arr[j+1]]=[arr[j+1],arr[j]];
+          swaps++;
+          swappedAny=true;
+          v.setArr(arr);
+          v.render([j,j+1], n-i);
+          await delay(510 - speedEl.value);
+        }
+      }
+      if(!swappedAny) break;
+    }
+    v.render([], 0);
+    v.setArr(arr);
+    v.status.textContent = `Done! Comparisons: ${comparisons} · Swaps: ${swaps}`;
+  }
+
+  async function selectionSortViz(v, speedEl){
+    let arr = v.getArr().slice();
+    let comparisons=0, swaps=0;
+    const n = arr.length;
+    for(let i=0;i<n;i++){
+      let minIdx=i;
+      for(let j=i+1;j<n;j++){
+        if(!v.isRunning()) return;
+        comparisons++;
+        v.status.textContent = `Comparisons: ${comparisons} · Swaps: ${swaps}`;
+        v.render([minIdx,j], i);
+        await delay(510 - speedEl.value);
+        if(arr[j]<arr[minIdx]) minIdx=j;
+      }
+      if(minIdx!==i){
+        [arr[i],arr[minIdx]]=[arr[minIdx],arr[i]];
+        swaps++;
+        v.setArr(arr);
+      }
+      v.render([], i+1);
+    }
+    v.status.textContent = `Done! Comparisons: ${comparisons} · Swaps: ${swaps}`;
+  }
+
+  async function insertionSortViz(v, speedEl){
+    let arr = v.getArr().slice();
+    let comparisons=0, shifts=0;
+    const n = arr.length;
+    for(let i=1;i<n;i++){
+      let key=arr[i], j=i-1;
+      while(j>=0 && arr[j]>key){
+        if(!v.isRunning()) return;
+        comparisons++; shifts++;
+        arr[j+1]=arr[j];
+        j--;
+        v.setArr(arr);
+        v.render([j+1,j+2]);
+        v.status.textContent = `Comparisons: ${comparisons} · Shifts: ${shifts}`;
+        await delay(510 - speedEl.value);
+      }
+      arr[j+1]=key;
+      v.setArr(arr);
+      v.render([j+1]);
+      await delay((510 - speedEl.value)/2);
+    }
+    v.render([],n);
+    v.status.textContent = `Done! Comparisons: ${comparisons} · Shifts: ${shifts}`;
+  }
+
+  document.getElementById('vizShuffle').addEventListener('click', ()=>{
+    viz1.setRunning(false);
+    viz1.setArr(randomArray(16,90));
+    document.getElementById('vizStatus').textContent='Comparisons: 0 · Swaps: 0';
+  });
+  document.getElementById('vizReset').addEventListener('click', ()=>{
+    viz1.setRunning(false);
+    viz1.render([],0);
+  });
+  document.getElementById('vizRun').addEventListener('click', async ()=>{
+    if(viz1.isRunning()) return;
+    viz1.setRunning(true);
+    const algo = document.getElementById('algoSelect').value;
+    const speedEl = document.getElementById('vizSpeed');
+    if(algo==='bubble') await bubbleSortViz(viz1, speedEl);
+    else if(algo==='selection') await selectionSortViz(viz1, speedEl);
+    else await insertionSortViz(viz1, speedEl);
+    viz1.setRunning(false);
+  });
+
+  async function mergeSortViz(v, speedEl){
+    let arr = v.getArr().slice();
+    let ops=0;
+    async function ms(lo,hi){
+      if(hi-lo<=1) return;
+      const mid=Math.floor((lo+hi)/2);
+      await ms(lo,mid);
+      await ms(mid,hi);
+      let left=arr.slice(lo,mid), right=arr.slice(mid,hi);
+      let i=0,j=0,k=lo;
+      while(i<left.length && j<right.length){
+        if(!v.isRunning()) return;
+        ops++;
+        v.status.textContent = `Merge operations: ${ops}`;
+        v.render([k]);
+        await delay(510 - speedEl.value);
+        arr[k] = left[i]<=right[j] ? left[i++] : right[j++];
+        k++;
+        v.setArr(arr);
+      }
+      while(i<left.length){ arr[k]=left[i++]; k++; v.setArr(arr); await delay((510-speedEl.value)/3); }
+      while(j<right.length){ arr[k]=right[j++]; k++; v.setArr(arr); await delay((510-speedEl.value)/3); }
+    }
+    await ms(0,arr.length);
+    v.render([],arr.length);
+    v.status.textContent = `Done! Merge operations: ${ops}`;
+  }
+
+  async function quickSortViz(v, speedEl){
+    let arr = v.getArr().slice();
+    let ops=0;
+    async function qs(lo,hi){
+      if(lo>=hi) return;
+      const pivot=arr[hi];
+      let i=lo;
+      for(let j=lo;j<hi;j++){
+        if(!v.isRunning()) return;
+        ops++;
+        v.status.textContent = `Partition operations: ${ops}`;
+        v.render([j,hi]);
+        await delay(510 - speedEl.value);
+        if(arr[j]<pivot){
+          [arr[i],arr[j]]=[arr[j],arr[i]];
+          i++;
+          v.setArr(arr);
+        }
+      }
+      [arr[i],arr[hi]]=[arr[hi],arr[i]];
+      v.setArr(arr);
+      await qs(lo,i-1);
+      await qs(i+1,hi);
+    }
+    await qs(0,arr.length-1);
+    v.render([],arr.length);
+    v.status.textContent = `Done! Partition operations: ${ops}`;
+  }
+
+  document.getElementById('vizShuffle2').addEventListener('click', ()=>{
+    viz2.setRunning(false);
+    viz2.setArr(randomArray(16,90));
+    document.getElementById('vizStatus2').textContent='Comparisons: 0 · Merges/Partitions: 0';
+  });
+  document.getElementById('vizReset2').addEventListener('click', ()=>{
+    viz2.setRunning(false);
+    viz2.render([],0);
+  });
+  document.getElementById('vizRun2').addEventListener('click', async ()=>{
+    if(viz2.isRunning()) return;
+    viz2.setRunning(true);
+    const algo = document.getElementById('algoSelect2').value;
+    const speedEl = document.getElementById('vizSpeed2');
+    if(algo==='merge') await mergeSortViz(viz2, speedEl);
+    else await quickSortViz(viz2, speedEl);
+    viz2.setRunning(false);
+  });
+
+  /* ================= QUIZZES ================= */
+  const quizData = {
+    quiz1: {
+      moduleId:'m1', starNum:1,
+      questions:[
+        {q:"Why does array indexing (arr[i]) take O(1) time?", opts:[
+          "The computer calculates the memory address directly from the start address and index",
+          "The computer searches through each element until it finds index i",
+          "Arrays are always sorted, so binary search is used",
+          "Arrays store a lookup table of every possible index"
+        ], correct:0, explain:"Because array elements are stored contiguously in memory, the address of element i can be computed directly with arithmetic — no searching needed."},
+        {q:"Which array operation typically costs O(n) instead of O(1)?", opts:[
+          "Reading arr[5]",
+          "Appending to the end (when there's room)",
+          "Inserting a new element at the front",
+          "Reading arr.length"
+        ], correct:2, explain:"Inserting at the front requires shifting every existing element one position to the right, which takes O(n) time."},
+        {q:"What is a key difference between a static array and a dynamic array?", opts:[
+          "Static arrays have O(n) indexed access",
+          "Dynamic arrays can automatically grow beyond their initial size",
+          "Dynamic arrays cannot be indexed directly",
+          "Static arrays store elements in non-contiguous memory"
+        ], correct:1, explain:"Dynamic arrays (like Python lists) automatically resize as needed, occasionally paying an O(n) cost to grow, while static arrays have a fixed size set at creation."},
+        {q:"In the locker-row analogy from this module, what does inserting an element in the middle correspond to?", opts:[
+          "Adding a brand new hallway",
+          "Shifting every locker after the insertion point down one position",
+          "Nothing needs to move",
+          "Removing all lockers before it"
+        ], correct:1, explain:"Just like physical lockers, every array element after the insertion point must shift to make room for the new element — this is the source of the O(n) cost."}
+      ]
+    },
+    quiz2: {
+      moduleId:'m2', starNum:2,
+      questions:[
+        {q:"What makes insertion sort 'adaptive'?", opts:[
+          "It always takes exactly O(n²) time",
+          "It runs much faster when the input is already nearly sorted",
+          "It adapts its algorithm based on array size automatically",
+          "It uses less memory as the array grows"
+        ], correct:1, explain:"Insertion sort's inner loop does less work when elements are already close to their correct position, so nearly-sorted input runs close to O(n)."},
+        {q:"Why does selection sort make fewer swaps than bubble sort?", opts:[
+          "It only swaps once per outer loop iteration, after finding the true minimum",
+          "It never swaps elements",
+          "It swaps every pair it compares",
+          "It uses recursion instead of swapping"
+        ], correct:0, explain:"Selection sort scans for the minimum first and performs at most one swap per pass, unlike bubble sort which swaps every out-of-order adjacent pair it finds."},
+        {q:"What does 'stable' mean for a sorting algorithm?", opts:[
+          "It never crashes on large inputs",
+          "It always runs in O(n log n) time",
+          "Equal elements keep their original relative order after sorting",
+          "It uses a fixed amount of memory regardless of input"
+        ], correct:2, explain:"A stable sort guarantees that two elements considered equal by the comparison stay in the same relative order they had before sorting."},
+        {q:"What early-exit optimization can bubble sort use?", opts:[
+          "Stop as soon as no swaps occur during a full pass, since the array is already sorted",
+          "Stop after exactly n/2 passes always",
+          "Skip every other element",
+          "Sort only the first half of the array"
+        ], correct:0, explain:"If a full pass makes zero swaps, the array is already sorted, so bubble sort can exit early instead of doing unnecessary additional passes."}
+      ]
+    },
+    quiz3: {
+      moduleId:'m3', starNum:3,
+      questions:[
+        {q:"Why do merge sort and quick sort achieve O(n log n) instead of O(n²)?", opts:[
+          "They use hash tables internally",
+          "Each level of recursion does O(n) work, and there are only O(log n) levels",
+          "They avoid comparisons entirely",
+          "They only work on already-sorted arrays"
+        ], correct:1, explain:"Divide-and-conquer sorts split the array in half repeatedly (O(log n) levels), and each level processes all n elements once, giving O(n log n) total."},
+        {q:"What is quick sort's worst-case time complexity, and when does it occur?", opts:[
+          "O(n log n), it never changes",
+          "O(n²), with consistently poor pivot choices (e.g. already-sorted input with a bad pivot strategy)",
+          "O(n), always",
+          "O(log n), on reversed arrays"
+        ], correct:1, explain:"If the chosen pivot is repeatedly the smallest or largest element, quick sort's partitions become highly unbalanced, degrading performance to O(n²)."},
+        {q:"Why does merge sort require O(n) extra space?", opts:[
+          "It needs temporary arrays to hold elements while merging two sorted halves",
+          "It stores a full copy of the array at every level for no reason",
+          "It doesn't — merge sort is fully in-place",
+          "It uses a hash map to track sorted positions"
+        ], correct:0, explain:"The merge step combines two sorted subarrays into a new sorted array, which requires auxiliary storage — this is the source of merge sort's O(n) space cost."},
+        {q:"Which is the better choice for sorting a huge dataset that doesn't fit in memory (external sorting)?", opts:[
+          "Quick sort, because it's in-place",
+          "Selection sort, because it's simple",
+          "Merge sort, because it processes data in sequential, mergeable chunks",
+          "Bubble sort, because it's stable"
+        ], correct:2, explain:"Merge sort's sequential merge step is well suited to reading and writing large chunks of data from disk, which is why it's the standard choice for external sorting."}
+      ]
+    },
+    quiz4: {
+      moduleId:'m4', starNum:4,
+      questions:[
+        {q:"What sorting algorithm does Python's built-in sort() use?", opts:[
+          "Pure quicksort",
+          "Pure bubble sort",
+          "Timsort — a hybrid of merge sort and insertion sort",
+          "Radix sort"
+        ], correct:2, explain:"Python uses Timsort, which combines merge sort's guaranteed O(n log n) performance with insertion sort's speed on small or nearly-sorted runs."},
+        {q:"Why does stability matter when sorting by multiple fields?", opts:[
+          "It doesn't matter in practice",
+          "It guarantees a previous sort order is preserved among elements considered equal by the new sort key",
+          "It only matters for numeric data",
+          "It makes the sort run faster"
+        ], correct:1, explain:"When sorting first by one field then another, a stable second sort preserves the relative order established by the first sort for any ties."},
+        {q:"What is the proven time-complexity lower bound for comparison-based sorting?", opts:[
+          "O(n)",
+          "O(n log n)",
+          "O(n²)",
+          "O(log n)"
+        ], correct:1, explain:"No comparison-based sorting algorithm can do better than O(n log n) in the worst case — this is a proven theoretical lower bound."},
+        {q:"For a leaderboard that's updated frequently and stays nearly sorted between updates, which algorithm is typically the best fit?", opts:[
+          "Selection sort, because it's simple",
+          "Insertion sort, because it's adaptive and fast on nearly-sorted data",
+          "Bubble sort with no early exit",
+          "An unstable variant of quicksort with a random pivot"
+        ], correct:1, explain:"Insertion sort's adaptive nature means it runs close to O(n) on data that's already nearly sorted, which fits a frequently-updated, mostly-sorted leaderboard well."}
+      ]
+    }
+  };
+
+  function buildQuiz(containerId){
+    const data = quizData[containerId];
+    const container = document.getElementById(containerId);
+    let answered = new Array(data.questions.length).fill(false);
+    let correctCount = 0;
+
+    const cardsHTML = data.questions.map((q,qi)=>{
+      const opts = q.opts.map((o,oi)=>`<button class="qopt" data-qi="${qi}" data-oi="${oi}">${o}</button>`).join('');
+      return `<div class="quiz-card" data-qi="${qi}">
+        <div class="qn">Question ${qi+1} of ${data.questions.length}</div>
+        <div class="qtext">${q.q}</div>
+        <div class="quiz-options">${opts}</div>
+        <div class="qexplain" data-qi="${qi}"></div>
+      </div>`;
+    }).join('');
+
+    container.innerHTML = `<h3 style="margin-bottom:16px;">Module quiz — check your understanding</h3>` + cardsHTML +
+      `<div class="quiz-summary" id="${containerId}-summary">
+         <div class="score" id="${containerId}-score">0/${data.questions.length}</div>
+         <div class="msg" id="${containerId}-msg"></div>
+         <button class="btn primary" id="${containerId}-continue">Continue to next module →</button>
+       </div>`;
+
+    container.querySelectorAll('.qopt').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const qi = parseInt(btn.dataset.qi);
+        if(answered[qi]) return;
+        answered[qi]=true;
+        const oi = parseInt(btn.dataset.oi);
+        const q = data.questions[qi];
+        const allOpts = container.querySelectorAll(`.qopt[data-qi="${qi}"]`);
+        allOpts.forEach(o=>o.disabled=true);
+        allOpts[oi].classList.add('selected');
+        if(oi===q.correct){
+          allOpts[oi].classList.add('correct');
+          correctCount++;
+        } else {
+          allOpts[oi].classList.add('incorrect');
+          allOpts[q.correct].classList.add('correct');
+        }
+        const ex = container.querySelector(`.qexplain[data-qi="${qi}"]`);
+        ex.textContent = "Explanation: " + q.explain;
+        ex.classList.add('show');
+
+        if(answered.every(Boolean)){
+          const pct = Math.round((correctCount/data.questions.length)*100);
+          document.getElementById(`${containerId}-score`).textContent = `${correctCount}/${data.questions.length}`;
+          const msgEl = document.getElementById(`${containerId}-msg`);
+          if(pct>=75){
+            msgEl.textContent = `Great work — ${pct}%! You've earned a mastery star for this module.`;
+            setStar(data.starNum);
+            completed[data.moduleId]=true;
+            updateProgress();
+          } else {
+            msgEl.textContent = `You scored ${pct}%. Consider reviewing the module above before continuing — you can still move forward.`;
+          }
+          document.getElementById(`${containerId}-summary`).classList.add('show');
+        }
+      });
+    });
+
+    document.getElementById(`${containerId}-continue`).addEventListener('click', ()=>{
+      unlockNext(data.moduleId);
+      const order = ['m1','m2','m3','m4','mfinal'];
+      const idx = order.indexOf(data.moduleId);
+      showModule(order[idx+1]);
+    });
+  }
+
+  ['quiz1','quiz2','quiz3','quiz4'].forEach(buildQuiz);
+
+})();
+</script>
+</body>
+</html>
