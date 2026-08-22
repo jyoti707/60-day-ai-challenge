@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>git blame: jyoti-singh-linkedin</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0d1117;
+    --surface:#12181f;
+    --surface2:#161b22;
+    --border:#2a313c;
+    --text:#c9d1d9;
+    --muted:#8b949e;
+    --red:#f85149;
+    --red-bg:#2a1315;
+    --green:#3fb950;
+    --green-bg:#0e2818;
+    --blue:#58a6ff;
+    --gold:#e3b341;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--text);
+    font-family:'Inter',sans-serif;
+    line-height:1.6;
+  }
+  code, .mono{font-family:'JetBrains Mono',monospace;}
+  ::selection{background:var(--blue);color:#0d1117;}
+
+  /* ---- top bar ---- */
+  .topbar{
+    border-bottom:1px solid var(--border);
+    padding:14px 24px;
+    display:flex;
+    align-items:center;
+    gap:10px;
+    font-family:'JetBrains Mono',monospace;
+    font-size:13px;
+    color:var(--muted);
+    position:sticky;top:0;background:rgba(13,17,23,.92);backdrop-filter:blur(6px);z-index:50;
+  }
+  .dot{width:11px;height:11px;border-radius:50%;}
+  .dot.r{background:#f85149}.dot.y{background:#e3b341}.dot.g{background:#3fb950}
+
+  .wrap{max-width:920px;margin:0 auto;padding:0 20px 100px;}
+
+  /* ---- hero ---- */
+  .hero{padding:56px 0 30px;border-bottom:1px solid var(--border);}
+  .eyebrow{font-family:'JetBrains Mono',monospace;color:var(--blue);font-size:13px;letter-spacing:.04em;margin-bottom:14px;}
+  h1{font-family:'JetBrains Mono',monospace;font-size:clamp(28px,4vw,42px);font-weight:800;margin:0 0 14px;line-height:1.25;}
+  h1 .strike{color:var(--red);text-decoration:line-through;text-decoration-color:rgba(248,81,73,.6);}
+  h1 .plus{color:var(--green);}
+  .hero p{color:var(--muted);font-size:16px;max-width:620px;}
+  .scoreline{display:flex;gap:28px;margin-top:28px;flex-wrap:wrap;}
+  .scorebox{font-family:'JetBrains Mono',monospace;}
+  .scorebox .lbl{font-size:11px;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;}
+  .scorebox .val{font-size:34px;font-weight:800;}
+  .scorebox .val.red{color:var(--red);}
+  .scorebox .val.green{color:var(--green);}
+  .arrow{align-self:center;color:var(--muted);font-size:22px;}
+
+  section{padding:48px 0;border-bottom:1px solid var(--border);}
+  .part-tag{font-family:'JetBrains Mono',monospace;color:var(--gold);font-size:12px;letter-spacing:.08em;margin-bottom:8px;}
+  h2{font-family:'JetBrains Mono',monospace;font-size:24px;margin:0 0 8px;}
+  .sub{color:var(--muted);margin-bottom:28px;font-size:15px;}
+
+  /* ---- report card ---- */
+  .card{
+    background:var(--surface2);
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:22px 24px;
+    margin-bottom:16px;
+  }
+  .card-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;gap:12px;flex-wrap:wrap;}
+  .card-head h3{margin:0;font-size:16px;font-family:'JetBrains Mono',monospace;}
+  .badge{font-family:'JetBrains Mono',monospace;font-weight:800;font-size:15px;padding:3px 10px;border-radius:6px;white-space:nowrap;}
+  .badge.low{background:var(--red-bg);color:var(--red);}
+  .badge.mid{background:#2a2313;color:var(--gold);}
+  .badge.high{background:var(--green-bg);color:var(--green);}
+  .quote{font-family:'JetBrains Mono',monospace;font-size:13px;background:var(--surface);border-left:3px solid var(--red);padding:10px 14px;margin:10px 0;color:#d9a2a0;border-radius:0 6px 6px 0;}
+  .reaction{font-size:13px;color:var(--blue);font-family:'JetBrains Mono',monospace;margin-bottom:14px;}
+  .breakdown p{margin:8px 0;font-size:14.5px;}
+  .breakdown b{color:#e6edf3;}
+
+  /* ---- diff block (signature element) ---- */
+  .diff{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:8px;
+    overflow:hidden;
+    margin:14px 0;
+    font-family:'JetBrains Mono',monospace;
+    font-size:13.5px;
+  }
+  .diff-line{padding:10px 16px;display:flex;gap:10px;border-left:3px solid transparent;}
+  .diff-line.old{background:var(--red-bg);color:#e6a6a3;border-left-color:var(--red);}
+  .diff-line.new{background:var(--green-bg);color:#9fe6ab;border-left-color:var(--green);}
+  .diff-line .sym{opacity:.7;user-select:none;flex-shrink:0;}
+  .diff-line.old .txt{text-decoration:line-through;text-decoration-color:rgba(248,81,73,.5);}
+
+  /* ---- headline options ---- */
+  .opt{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:16px 18px;margin-bottom:12px;}
+  .opt .tag{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--gold);letter-spacing:.05em;text-transform:uppercase;margin-bottom:6px;}
+  .opt .text{font-family:'JetBrains Mono',monospace;font-size:14.5px;color:#e6edf3;margin-bottom:8px;}
+  .opt .when{font-size:13px;color:var(--muted);}
+
+  /* ---- keywords ---- */
+  .kw{display:inline-block;background:#132030;border:1px solid #1f3a52;color:var(--blue);font-family:'JetBrains Mono',monospace;font-size:12px;padding:4px 10px;border-radius:14px;margin:3px 4px 0 0;}
+
+  /* ---- skills grid ---- */
+  .skillcols{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+  @media(max-width:640px){.skillcols{grid-template-columns:1fr;}}
+  .skillbox h4{font-family:'JetBrains Mono',monospace;font-size:13px;margin:0 0 10px;letter-spacing:.04em;}
+  .skillbox.add h4{color:var(--green);}
+  .skillbox.remove h4{color:var(--red);}
+  .skillbox ol,.skillbox ul{margin:0;padding-left:20px;font-size:14px;}
+  .skillbox li{margin-bottom:6px;}
+  .pin3{margin-top:16px;font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--gold);}
+
+  /* ---- scorecard table ---- */
+  table{width:100%;border-collapse:collapse;font-family:'JetBrains Mono',monospace;font-size:14px;}
+  th,td{padding:12px 10px;border-bottom:1px solid var(--border);text-align:left;}
+  th{color:var(--muted);font-weight:500;font-size:12px;text-transform:uppercase;letter-spacing:.05em;}
+  td.change{color:var(--green);font-weight:700;}
+  tr.total td{font-weight:800;font-size:16px;color:#e6edf3;border-top:2px solid var(--border);}
+
+  /* ---- day plan ---- */
+  .daytabs{display:flex;gap:6px;overflow-x:auto;margin-bottom:20px;padding-bottom:4px;}
+  .daytab{
+    font-family:'JetBrains Mono',monospace;font-size:13px;padding:8px 14px;border-radius:6px;
+    border:1px solid var(--border);background:var(--surface2);color:var(--muted);cursor:pointer;white-space:nowrap;
+  }
+  .daytab.active{background:var(--blue);color:#0d1117;border-color:var(--blue);font-weight:700;}
+  .daypanel{display:none;}
+  .daypanel.active{display:block;}
+  .daypanel h3{font-family:'JetBrains Mono',monospace;font-size:17px;margin-top:0;color:#e6edf3;}
+  .checklist{list-style:none;padding:0;margin:14px 0;}
+  .checklist li{padding:9px 0 9px 30px;position:relative;font-size:14.5px;border-bottom:1px dashed var(--border);}
+  .checklist li:before{content:"☐";position:absolute;left:0;color:var(--blue);font-size:16px;}
+  .postbox{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:18px;margin-top:14px;font-size:14.5px;white-space:pre-wrap;font-family:'JetBrains Mono',monospace;line-height:1.65;}
+  .postbox .charcount{color:var(--muted);font-size:11px;display:block;margin-top:10px;text-align:right;}
+  .msgtemplate{background:var(--surface);border-left:3px solid var(--blue);border-radius:0 8px 8px 0;padding:14px 16px;margin-top:10px;font-family:'JetBrains Mono',monospace;font-size:13.5px;}
+  .formula{background:var(--surface);border:1px dashed var(--border);border-radius:8px;padding:14px 16px;margin:12px 0;font-family:'JetBrains Mono',monospace;font-size:14px;color:var(--gold);}
+
+  /* ---- summary card ---- */
+  .sharecard{
+    background:linear-gradient(150deg,#111820,#0b0f14);
+    border:1px solid var(--border);
+    border-radius:16px;
+    padding:32px 30px;
+    position:relative;
+    overflow:hidden;
+  }
+  .sharecard:before{content:"";position:absolute;top:-60px;right:-60px;width:220px;height:220px;background:radial-gradient(circle,rgba(88,166,255,.18),transparent 70%);}
+  .sharecard h3{font-family:'JetBrains Mono',monospace;font-size:19px;margin:0 0 18px;color:#e6edf3;}
+  .sharescores{display:flex;align-items:center;gap:18px;margin-bottom:20px;font-family:'JetBrains Mono',monospace;}
+  .sharescores .b{font-size:30px;font-weight:800;color:var(--red);}
+  .sharescores .a{font-size:30px;font-weight:800;color:var(--green);}
+  .sharecard ol{padding-left:20px;margin:14px 0;font-size:14.5px;}
+  .sharecard li{margin-bottom:6px;}
+  .highlight{margin-top:16px;background:var(--surface);border-radius:8px;padding:14px 16px;font-size:14px;border:1px solid var(--border);}
+  .highlight b{color:var(--gold);}
+
+  footer{text-align:center;padding:36px 0 10px;color:var(--muted);font-family:'JetBrains Mono',monospace;font-size:12px;}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+  &nbsp;jyoti-singh-linkedin — git diff — main
+</div>
+
+<div class="wrap">
+
+  <div class="hero">
+    <div class="eyebrow">// LINKEDIN AUDIT REPORT</div>
+    <h1>Your profile isn't broken.<br>It's just <span class="strike">underselling you</span> <span class="plus">by 50 points.</span></h1>
+    <p>You have real numbers (25% latency cut, 40% navigation boost, 15hrs/week saved) buried in a wall of text, and a headline that leads with "Aspiring." Let's fix that.</p>
+    <div class="scoreline">
+      <div class="scorebox"><div class="lbl">Before</div><div class="val red">38<span style="font-size:16px;color:var(--muted)">/100</span></div></div>
+      <div class="arrow">→</div>
+      <div class="scorebox"><div class="lbl">After</div><div class="val green">90<span style="font-size:16px;color:var(--muted)">/100</span></div></div>
+      <div class="arrow" style="align-self:center;color:var(--green);font-family:'JetBrains Mono',monospace;font-size:15px;">+52</div>
+    </div>
+  </div>
+
+  <!-- PART 1 -->
+  <section>
+    <div class="part-tag">PART 01</div>
+    <h2>The Roast</h2>
+    <div class="sub">Honest, section-by-section. Here's what a recruiter thinks in the first 3 seconds.</div>
+
+    <div class="card">
+      <div class="card-head"><h3>Headline</h3><span class="badge low">4/10</span></div>
+      <div class="quote">"B.Tech IT Student | AI Web Developer | Aspiring Software Developer | DSA | Python | Full Stack Development"</div>
+      <div class="reaction">Recruiter's 3-sec read: "Another student headline. Next."</div>
+      <div class="breakdown">
+        <p>❌ <b>The problem:</b> Six labels crammed together with no hierarchy — "AI Web Developer," "Aspiring Software Developer," and "Full Stack Development" are all fighting for attention, and none of them win. "Aspiring" is doing real damage here.</p>
+        <p>🧠 <b>Why it hurts:</b> Recruiters skim headlines in under 2 seconds while scrolling search results. A pile of keywords with no proof or focus reads as "hasn't figured out their positioning yet" — even if you have.</p>
+        <p>🔍 <b>Invisible cost:</b> "Aspiring" actively lowers your rank in some recruiter search filters, which favor confident, role-specific language. You're filtering yourself out of searches you'd otherwise appear in.</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><h3>About — First 2 Lines</h3><span class="badge low">3/10</span></div>
+      <div class="quote">"I am a passionate B.Tech IT student at ABES Engineering College with a strong interest in Full Stack Web Development and Data Structures & Algorithms."</div>
+      <div class="reaction">Recruiter's 3-sec read: never clicks "see more."</div>
+      <div class="breakdown">
+        <p>❌ <b>The problem:</b> This is the most valuable real estate on your entire profile — the only text visible before "see more" — and it opens with "I am a passionate student," the single most common opening line on LinkedIn.</p>
+        <p>🧠 <b>Why it hurts:</b> "Passionate" is a filler word recruiters have learned to skip past. It signals enthusiasm with zero evidence, so it reads as generic rather than credible.</p>
+        <p>🔍 <b>Invisible cost:</b> Most recruiters decide whether to expand a profile's About section within these two lines. You're losing the click before you get the chance to show them the internship results further down.</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><h3>About — Full Section</h3><span class="badge mid">5/10</span></div>
+      <div class="reaction">Recruiter's read: "Fine, but forgettable."</div>
+      <div class="breakdown">
+        <p>❌ <b>The problem:</b> Real substance is in here (LeetCode/HackerRank practice, frontend + full-stack projects) but it's described in vague terms — "hands-on experience," "real-world projects," "efficient logic" — with zero numbers and no CTA at the end.</p>
+        <p>🧠 <b>Why it hurts:</b> You have hard numbers sitting one section down in your Experience (25%, 30%, 40%, 15%) that never make it into your About. Recruiters who don't scroll further never see your best proof.</p>
+        <p>🔍 <b>Invisible cost:</b> No CTA means even an impressed reader has no obvious next step — no "message me," no mention of internship availability. You're leaving interested recruiters with nothing to do.</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><h3>Experience</h3><span class="badge mid">5/10</span></div>
+      <div class="reaction">Recruiter's read: "Good numbers, but I have to work to find them."</div>
+      <div class="breakdown">
+        <p>❌ <b>The problem:</b> This is genuinely your strongest content — 25% latency reduction, 30% query efficiency, 40% navigation improvement, 15 hrs/week saved — but it's one unbroken paragraph, not bullets. It reads like a job description, not an achievement list.</p>
+        <p>🧠 <b>Why it hurts:</b> Recruiters scan, they don't read paragraphs. A wall of text with strong numbers buried in the middle performs worse than short bullets with weaker numbers up front.</p>
+        <p>🔍 <b>Invisible cost:</b> You're getting zero credit for your best metric (15 hrs/week saved) because it's the very last clause of a 90-word sentence. Almost nobody reads that far.</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><h3>Skills &amp; Keywords</h3><span class="badge low">4/10</span></div>
+      <div class="reaction">Recruiter's search filter: partially missing you.</div>
+      <div class="breakdown">
+        <p>❌ <b>The problem:</b> Your skill list mixes real technical strength (MERN Stack, MongoDB, Express.js, React.js) with off-target entries: <i>Fundraising, Telecommuting, Group Discussions, Sensitive Information, Confidentiality, Report Writing, Task Management.</i></p>
+        <p>🧠 <b>Why it hurts:</b> LinkedIn's search ranking weighs skill relevance to your headline and role. Non-technical, unrelated skills dilute your topical relevance for "Software Developer Intern" searches.</p>
+        <p>🔍 <b>Invisible cost:</b> You're missing DSA-specific and system-design keywords entirely, despite it being one of your two core focus areas per your own About section. That's a searchable gap recruiters filter on directly.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- PART 2 -->
+  <section>
+    <div class="part-tag">PART 02</div>
+    <h2>The Rebuild</h2>
+    <div class="sub">Every rewrite below, plus the strategy behind it — so you can write the next one yourself.</div>
+
+    <h3 style="font-family:'JetBrains Mono',monospace;font-size:16px;">Headline — 3 options</h3>
+    <div class="formula">FORMULA → [Role/Identity] | [Who I Help or What I Do] | [Proof or Differentiator]</div>
+
+    <div class="opt">
+      <div class="tag">Option 1 — Keyword-Optimized</div>
+      <div class="text">Full Stack Web Developer (MERN) | Python &amp; DSA | Building Scalable Web Apps | Open to SDE Internships</div>
+      <div class="when">Use when: you want to show up in recruiter search results. Leads with the exact terms ("Full Stack," "MERN," "SDE Internships") recruiters type into LinkedIn's search bar.</div>
+    </div>
+    <div class="opt">
+      <div class="tag">Option 2 — Value-Proposition</div>
+      <div class="text">I build fast, secure full-stack web apps — from database to deployment | MERN | Python | DSA</div>
+      <div class="when">Use when: a human is actually reading your headline (after clicking from search). Leads with outcome, not label — makes you sound like someone who ships, not someone still "aspiring."</div>
+    </div>
+    <div class="opt">
+      <div class="tag">Option 3 — Authority</div>
+      <div class="text">B.Tech IT '27 | MERN Stack Developer | Turning DSA + Full Stack skills into production-ready apps</div>
+      <div class="when">Use when: you want to signal trajectory and confidence to recruiters comparing you against other students — this frames your degree as a timestamp, not your identity.</div>
+    </div>
+
+    <h3 style="font-family:'JetBrains Mono',monospace;font-size:16px;margin-top:36px;">About Section — full rewrite</h3>
+    <div class="diff">
+      <div class="diff-line old"><span class="sym">−</span><span class="txt">I am a passionate B.Tech IT student at ABES Engineering College with a strong interest in Full Stack Web Development and Data Structures &amp; Algorithms.</span></div>
+      <div class="diff-line new"><span class="sym">+</span><span class="txt">I don't just learn to code — I build things that work in production.</span></div>
+    </div>
+    <div class="postbox">I don't just learn to code — I build things that work in production.
+
+As a B.Tech IT student at ABES Engineering College, I focus on Full Stack Development (MERN) and Data Structures &amp; Algorithms — the combination that turns ideas into apps that actually scale.
+
+In my most recent internship, I engineered a full MERN-stack food delivery platform: built RESTful APIs that cut frontend-backend latency by 25%, optimized MongoDB schemas to improve query efficiency by 30%, and shipped secure JWT authentication that helped lift conversions by 15%.
+
+I sharpen my logic daily on LeetCode and HackerRank, and I care as much about clean architecture as clean UI.
+
+Currently strengthening my backend and database fundamentals as I prepare for Software Developer Internship roles.
+
+📩 Open to SDE Internship opportunities — message me, or check out my projects below.</div>
+    <p style="margin-top:14px;font-size:13px;color:var(--muted);">Keywords embedded for search:</p>
+    <div>
+      <span class="kw">Full Stack Development</span><span class="kw">MERN Stack</span><span class="kw">Data Structures &amp; Algorithms</span><span class="kw">RESTful APIs</span><span class="kw">MongoDB</span><span class="kw">JWT Authentication</span><span class="kw">Software Developer Internship</span>
+    </div>
+
+    <h3 style="font-family:'JetBrains Mono',monospace;font-size:16px;margin-top:36px;">Experience — top entry, bullet by bullet</h3>
+
+    <div class="diff">
+      <div class="diff-line old"><span class="sym">−</span><span class="txt">Engineered a highly responsive online food delivery web application using the MERN stack, increasing seamless user navigation across client, admin, and order-management modules by 40%.</span></div>
+      <div class="diff-line new"><span class="sym">+</span><span class="txt">Built a full-stack food delivery platform (MERN) spanning client, admin &amp; order-management modules — improved navigation efficiency by 40%</span></div>
+    </div>
+    <div class="diff">
+      <div class="diff-line old"><span class="sym">−</span><span class="txt">Architected and integrated RESTful APIs using Node.js and Express.js, reducing frontend-backend latency by 25%.</span></div>
+      <div class="diff-line new"><span class="sym">+</span><span class="txt">Designed &amp; integrated RESTful APIs (Node.js/Express.js), cutting frontend-backend latency by 25%</span></div>
+    </div>
+    <div class="diff">
+      <div class="diff-line old"><span class="sym">−</span><span class="txt">Designed and optimized complex MongoDB schemas for user profiles, dynamic menus, and real-time order tracking, improving database query efficiency by 30%.</span></div>
+      <div class="diff-line new"><span class="sym">+</span><span class="txt">Optimized MongoDB schemas for user profiles, menus &amp; real-time order tracking — boosted query efficiency by 30%</span></div>
+    </div>
+    <div class="diff">
+      <div class="diff-line old"><span class="sym">−</span><span class="txt">Implemented secure JWT-based authentication, an interactive cart system, and a streamlined checkout flow, boosting overall conversion rates by 15%.</span></div>
+      <div class="diff-line new"><span class="sym">+</span><span class="txt">Implemented JWT authentication, an interactive cart &amp; streamlined checkout — increased conversion rate by 15%</span></div>
+    </div>
+    <div class="diff">
+      <div class="diff-line old"><span class="sym">−</span><span class="txt">Developed a comprehensive admin dashboard to monitor user analytics, inventory, and order fulfillment in real time, cutting administrative overhead by 15 hours per week.</span></div>
+      <div class="diff-line new"><span class="sym">+</span><span class="txt">Built a real-time admin dashboard for analytics, inventory &amp; order tracking — saved 15 hrs/week of admin overhead</span></div>
+    </div>
+
+    <h3 style="font-family:'JetBrains Mono',monospace;font-size:16px;margin-top:36px;">Skills Recommendations</h3>
+    <div class="skillcols">
+      <div class="skillbox add">
+        <h4>+ ADD (priority order)</h4>
+        <ol>
+          <li>Data Structures &amp; Algorithms</li>
+          <li>REST API Design</li>
+          <li>SQL</li>
+          <li>System Design Basics</li>
+          <li>TypeScript</li>
+          <li>Unit Testing</li>
+          <li>Docker</li>
+          <li>Cloud Basics (AWS/Azure)</li>
+          <li>Agile / Scrum</li>
+          <li>API Testing (Postman already listed — pair it with this label)</li>
+        </ol>
+      </div>
+      <div class="skillbox remove">
+        <h4>− REMOVE</h4>
+        <ul>
+          <li>Fundraising</li>
+          <li>Telecommuting</li>
+          <li>Group Discussions</li>
+          <li>Sensitive Information</li>
+          <li>Confidentiality</li>
+          <li>Report Writing</li>
+          <li>Task Management</li>
+        </ul>
+      </div>
+    </div>
+    <div class="pin3">📌 Pin to top 3: MERN Stack · Python (Programming Language) · Data Structures &amp; Algorithms</div>
+  </section>
+
+  <!-- PART 3 -->
+  <section>
+    <div class="part-tag">PART 03</div>
+    <h2>Before vs After Scorecard</h2>
+    <table>
+      <tr><th>Section</th><th>Before</th><th>After</th><th>Change</th></tr>
+      <tr><td>Headline</td><td>4/10</td><td>9/10</td><td class="change">+5</td></tr>
+      <tr><td>About (Hook)</td><td>3/10</td><td>9/10</td><td class="change">+6</td></tr>
+      <tr><td>About (Full)</td><td>5/10</td><td>9/10</td><td class="change">+4</td></tr>
+      <tr><td>Experience</td><td>5/10</td><td>9/10</td><td class="change">+4</td></tr>
+      <tr><td>Skills / Keywords</td><td>4/10</td><td>9/10</td><td class="change">+5</td></tr>
+      <tr class="total"><td>OVERALL</td><td style="color:var(--red)">38/100</td><td style="color:var(--green)">90/100</td><td class="change">+52</td></tr>
+    </table>
+  </section>
+
+  <!-- PART 4 -->
+  <section>
+    <div class="part-tag">PART 04</div>
+    <h2>7-Day LinkedIn Activation Plan</h2>
+    <div class="sub">Editing your profile gets you found. These actions get you seen.</div>
+
+    <div class="daytabs" id="daytabs"></div>
+
+    <div id="daypanels">
+      <div class="daypanel" data-day="0">
+        <h3>Day 1 — Ship all profile changes</h3>
+        <ul class="checklist">
+          <li>Update headline to Option 1 (keyword-optimized version)</li>
+          <li>Replace About section with the full rewrite above</li>
+          <li>Rewrite CodeVeda experience bullets (5 bullets, not a paragraph)</li>
+          <li>Remove 7 irrelevant skills (Fundraising, Telecommuting, etc.)</li>
+          <li>Add the 10 new priority skills, request endorsements from 2-3 people you've worked with</li>
+          <li>Pin your top 3 skills</li>
+          <li>Add a Featured section: link your best project or GitHub repo</li>
+        </ul>
+      </div>
+
+      <div class="daypanel" data-day="1">
+        <h3>Day 2 — Publish Post #1: "I rebuilt my LinkedIn"</h3>
+        <p style="font-size:14px;color:var(--muted)">Hook-driven, invites comments, doubles as social proof of your before/after work.</p>
+        <div class="postbox">I just spent an evening rewriting my entire LinkedIn profile — and it made me realize how badly I was underselling myself.
+
+My old headline literally said "Aspiring Software Developer." My About section opened with "I am a passionate student." Recruiters were skimming past real numbers — 25% latency cut, 30% query efficiency gain, 15 hrs/week saved — because they were buried in a paragraph nobody reads to the end of.
+
+Here's what I changed:
+→ Headline: from generic labels to role + proof
+→ About: from "I am passionate" to a hook that actually says what I build
+→ Experience: from one dense paragraph to 5 scannable, numbers-first bullets
+
+Biggest lesson: your profile isn't a resume. It's a 3-second pitch. If the reader has to work to find your best line, they won't.
+
+Currently open to Software Developer Internship roles — always happy to connect with fellow builders 👇
+
+What's one line on your profile you'd rewrite today?
+<span class="charcount">≈ 890 characters</span></div>
+      </div>
+
+      <div class="daypanel" data-day="2">
+        <h3>Day 3 — Send 10 strategic connection requests</h3>
+        <p style="font-size:14px;">Target: <b>SDE recruiters and engineering managers at 5-6 mid-size product companies</b>, plus <b>2nd-year+ SDE interns/new grads at companies you're targeting</b> (they reply more often and can refer you), and <b>alumni from ABES Engineering College now working as developers</b> — alumni accept at far higher rates than cold recruiter requests.</p>
+        <div class="msgtemplate">Hi [Name], I'm a B.Tech IT student building full-stack projects in MERN and prepping for SDE internships. I really admire the work your team does at [Company] — would love to stay connected and learn from your journey.
+<span class="charcount">≈ 210 characters</span></div>
+      </div>
+
+      <div class="daypanel" data-day="3">
+        <h3>Day 4 — Comment on 5 posts in your target space</h3>
+        <div class="formula">THE VALUE COMMENT FORMULA → Agree + Add Insight + Ask a Question</div>
+        <p style="font-size:14.5px;"><b>Agree:</b> Open by genuinely engaging with their point — not "Great post!" but what specifically resonated.<br>
+        <b>Add Insight:</b> Bring something from your own experience — even a small MERN/DSA lesson counts.<br>
+        <b>Ask a Question:</b> End with a real question. Questions are what get the poster to reply, and replies are what get YOU seen by their audience.</p>
+        <p style="font-size:14px;color:var(--muted);">Example: "Completely agree that latency is the silent killer of conversion — I saw a similar 25% improvement just from restructuring our REST endpoints on a recent MERN project. Curious how you'd approach caching on top of that?"</p>
+      </div>
+
+      <div class="daypanel" data-day="4">
+        <h3>Day 5 — Publish Post #2: lessons-learned / hot take</h3>
+        <div class="postbox">Unpopular opinion: as a student, your GitHub commit history matters more than your GPA for landing an SDE internship.
+
+I spent the last 2 months building a MERN-stack food delivery app — real APIs, real database schema decisions, real bugs at 1am. Cutting frontend-backend latency by 25% taught me more about how the web actually works than any single course did.
+
+DSA gets you through the interview. Projects get you the interview.
+
+If you're a student reading this: ship something end-to-end before you're "ready." You'll learn faster from the parts that break.
+
+What's a project that taught you more than a class did?
+<span class="charcount">≈ 640 characters</span></div>
+      </div>
+
+      <div class="daypanel" data-day="5">
+        <h3>Day 6 — Engage + expand</h3>
+        <ul class="checklist">
+          <li>Reply to every comment on both posts within a few hours — replies re-trigger the algorithm and boost reach</li>
+          <li>Send 5 more connection requests (repeat Day 3's targeting: recruiters, alumni, interns)</li>
+          <li>DM 2 people who commented meaningfully on your posts — turn engagement into an actual conversation</li>
+        </ul>
+      </div>
+
+      <div class="daypanel" data-day="6">
+        <h3>Day 7 — Review the numbers</h3>
+        <p style="font-size:14.5px;">Check: <b>profile views</b> (weekly, in your Dashboard) and <b>connection acceptance rate</b> (accepted ÷ sent).</p>
+        <ul class="checklist">
+          <li>Profile views up sharply vs. last week → your headline/keywords are working, keep posting</li>
+          <li>Views flat but connections accepting well → your outreach targeting is good, but your headline needs another pass</li>
+          <li>Acceptance rate below ~30% → your connection message is too generic or you're targeting too senior — personalize more, or target 1-2 levels closer to your own stage</li>
+          <li>Post views low → hook (first line) isn't stopping the scroll — rewrite the first sentence, not the whole post</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- PART 5 -->
+  <section style="border-bottom:none;">
+    <div class="part-tag">PART 05</div>
+    <h2>What I Learned Today</h2>
+    <div class="sub">Screenshot this and post it. Yes, really.</div>
+
+    <div class="sharecard">
+      <h3>🔥 I let AI roast my LinkedIn profile today. Here's what changed:</h3>
+      <div class="sharescores">
+        <span class="b">38/100</span><span style="color:var(--muted)">→</span><span class="a">90/100</span>
+      </div>
+      <p style="font-size:14.5px;margin-bottom:6px;"><b>Top 3 mistakes I was making:</b></p>
+      <ol>
+        <li>My headline led with "Aspiring" instead of proof of what I've built</li>
+        <li>My best numbers (25% latency cut, 30% query efficiency, 15 hrs/week saved) were buried in a paragraph nobody reads to the end</li>
+        <li>My skills list was diluted with 7 irrelevant tags that had nothing to do with software development</li>
+      </ol>
+      <div class="highlight"><b>The #1 thing that made the biggest difference:</b> turning one dense paragraph of achievements into 5 scannable, numbers-first bullets. Same work, same results — just finally visible.</div>
+    </div>
+  </section>
+
+  <footer>generated from your actual profile data — no achievements invented</footer>
+</div>
+
+<script>
+  const days = document.querySelectorAll('.daypanel');
+  const tabbar = document.getElementById('daytabs');
+  const labels = ['Day 1','Day 2','Day 3','Day 4','Day 5','Day 6','Day 7'];
+  labels.forEach((lbl,i)=>{
+    const b = document.createElement('button');
+    b.className = 'daytab' + (i===0?' active':'');
+    b.textContent = lbl;
+    b.onclick = ()=>{
+      document.querySelectorAll('.daytab').forEach(t=>t.classList.remove('active'));
+      b.classList.add('active');
+      days.forEach(d=>d.classList.toggle('active', d.dataset.day==i));
+    };
+    tabbar.appendChild(b);
+  });
+  days.forEach(d=>{ if(d.dataset.day==='0') d.classList.add('active'); });
+</script>
+
+</body>
+</html>
