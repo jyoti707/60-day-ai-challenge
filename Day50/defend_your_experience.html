@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Defend Your Experience — Jyoti Singh</title>
+<style>
+:root{
+  --bg:#0a0a0f;
+  --bg-2:#0f0f18;
+  --panel:#14141f;
+  --panel-2:#191927;
+  --border:#26263a;
+  --border-hi:#3a3a5c;
+  --text:#eceaf7;
+  --text-dim:#9695b3;
+  --text-faint:#5f5e7a;
+  --accent:#ff4d6d;
+  --accent-2:#7b5cff;
+  --accent-3:#00e5a0;
+  --warn:#ffb020;
+  --danger:#ff4d6d;
+  --good:#00e5a0;
+  --mid:#ffb020;
+  --grad: linear-gradient(135deg, #7b5cff 0%, #ff4d6d 100%);
+  --font-head:'Space Grotesk', 'Segoe UI', sans-serif;
+  --font-body:'Inter', 'Segoe UI', sans-serif;
+  --font-mono:'JetBrains Mono', 'Consolas', monospace;
+  --radius:16px;
+}
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+*{box-sizing:border-box; margin:0; padding:0;}
+html,body{height:100%;}
+body{
+  background:
+    radial-gradient(ellipse 900px 500px at 15% -10%, rgba(123,92,255,.25), transparent 60%),
+    radial-gradient(ellipse 800px 600px at 110% 10%, rgba(255,77,109,.18), transparent 55%),
+    var(--bg);
+  color:var(--text);
+  font-family:var(--font-body);
+  min-height:100vh;
+  overflow-x:hidden;
+}
+::selection{background:var(--accent-2); color:#fff;}
+::-webkit-scrollbar{width:8px; height:8px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--border-hi); border-radius:8px;}
+
+.app{max-width:1200px; margin:0 auto; padding:28px 20px 80px;}
+
+/* ---------- Top bar ---------- */
+.topbar{display:flex; align-items:center; justify-content:space-between; margin-bottom:28px;}
+.brand{display:flex; align-items:center; gap:10px;}
+.brand-mark{
+  width:36px; height:36px; border-radius:10px; background:var(--grad);
+  display:flex; align-items:center; justify-content:center; font-family:var(--font-head); font-weight:700; font-size:16px; color:#fff;
+  box-shadow:0 0 24px rgba(255,77,109,.35);
+}
+.brand-text{font-family:var(--font-head); font-weight:700; font-size:18px; letter-spacing:-.02em;}
+.brand-text span{color:var(--accent-2);}
+.topbar-actions{display:flex; gap:10px; align-items:center;}
+
+.btn{
+  font-family:var(--font-body); font-weight:600; font-size:13.5px; letter-spacing:.01em;
+  padding:10px 18px; border-radius:10px; border:1px solid var(--border-hi); background:var(--panel-2);
+  color:var(--text); cursor:pointer; transition:all .15s ease; display:inline-flex; align-items:center; gap:8px;
+}
+.btn:hover{border-color:var(--accent-2); background:#20203a; transform:translateY(-1px);}
+.btn:active{transform:translateY(0);}
+.btn-primary{background:var(--grad); border:none; color:#fff; box-shadow:0 4px 20px rgba(123,92,255,.35);}
+.btn-primary:hover{filter:brightness(1.08); box-shadow:0 6px 24px rgba(255,77,109,.4);}
+.btn-ghost{background:transparent; border-color:var(--border);}
+.btn-sm{padding:7px 12px; font-size:12.5px;}
+.btn:disabled{opacity:.4; cursor:not-allowed; transform:none;}
+
+/* ---------- Hero / landing ---------- */
+.hero{
+  text-align:center; padding:60px 20px 40px; animation:fadeUp .6s ease;
+}
+.hero-eyebrow{
+  display:inline-block; font-family:var(--font-mono); font-size:12px; letter-spacing:.12em; text-transform:uppercase;
+  color:var(--accent-3); background:rgba(0,229,160,.08); border:1px solid rgba(0,229,160,.25);
+  padding:6px 14px; border-radius:100px; margin-bottom:22px;
+}
+.hero h1{
+  font-family:var(--font-head); font-weight:700; font-size:clamp(32px,5vw,54px); line-height:1.08; letter-spacing:-.03em;
+  margin-bottom:18px;
+}
+.hero h1 .grad-text{
+  background:var(--grad); -webkit-background-clip:text; background-clip:text; color:transparent;
+}
+.hero p{color:var(--text-dim); font-size:17px; max-width:620px; margin:0 auto 32px; line-height:1.6;}
+.hero-actions{display:flex; gap:14px; justify-content:center; flex-wrap:wrap;}
+
+.claims-preview{
+  margin-top:56px; text-align:left;
+}
+.claims-preview h3{font-family:var(--font-head); font-size:15px; color:var(--text-dim); margin-bottom:16px; text-transform:uppercase; letter-spacing:.08em; text-align:center;}
+.claims-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:14px;}
+.claim-card{
+  background:var(--panel); border:1px solid var(--border); border-radius:14px; padding:16px 18px;
+  transition:all .2s ease; cursor:default;
+}
+.claim-card:hover{border-color:var(--border-hi); transform:translateY(-2px);}
+.claim-card .tag{font-family:var(--font-mono); font-size:10.5px; color:var(--accent-2); text-transform:uppercase; letter-spacing:.08em;}
+.claim-card p{font-size:14px; margin-top:8px; color:var(--text); line-height:1.5;}
+.claim-card .src{font-size:11.5px; color:var(--text-faint); margin-top:8px;}
+
+/* ---------- Layout: interview screen ---------- */
+.interview-layout{display:none; grid-template-columns:290px 1fr; gap:24px; animation:fadeUp .5s ease;}
+.interview-layout.active{display:grid;}
+
+.sidebar{position:sticky; top:20px; align-self:start; display:flex; flex-direction:column; gap:16px;}
+.progress-card, .claims-panel{
+  background:var(--panel); border:1px solid var(--border); border-radius:var(--radius); padding:18px;
+}
+.progress-card h4, .claims-panel h4{
+  font-family:var(--font-head); font-size:13px; text-transform:uppercase; letter-spacing:.07em; color:var(--text-dim); margin-bottom:14px;
+}
+.progress-bar-track{height:8px; background:var(--panel-2); border-radius:8px; overflow:hidden; margin-bottom:10px;}
+.progress-bar-fill{height:100%; background:var(--grad); border-radius:8px; transition:width .5s ease; width:0%;}
+.progress-stats{display:flex; justify-content:space-between; font-size:12.5px; color:var(--text-dim);}
+.overall-conf{margin-top:16px; text-align:center;}
+.overall-conf .num{font-family:var(--font-head); font-size:38px; font-weight:700;}
+.overall-conf .lbl{font-size:11.5px; color:var(--text-faint); text-transform:uppercase; letter-spacing:.08em; margin-top:2px;}
+
+.claims-list{display:flex; flex-direction:column; gap:8px; max-height:420px; overflow-y:auto; padding-right:4px;}
+.claim-row{
+  padding:10px 12px; border-radius:10px; background:var(--panel-2); border:1px solid transparent; cursor:pointer;
+  transition:all .15s ease; position:relative;
+}
+.claim-row:hover{border-color:var(--border-hi);}
+.claim-row.current{border-color:var(--accent-2); background:#1c1c30;}
+.claim-row .crow-top{display:flex; justify-content:space-between; align-items:center; gap:8px;}
+.claim-row .crow-text{font-size:12.5px; line-height:1.4; color:var(--text); flex:1;}
+.dot{width:9px; height:9px; border-radius:50%; flex-shrink:0;}
+.dot.unstarted{background:var(--text-faint);}
+.dot.weak{background:var(--danger); box-shadow:0 0 8px rgba(255,77,109,.6);}
+.dot.mid{background:var(--mid); box-shadow:0 0 8px rgba(255,176,32,.5);}
+.dot.strong{background:var(--good); box-shadow:0 0 8px rgba(0,229,160,.5);}
+
+/* ---------- Chat panel ---------- */
+.chat-panel{
+  background:var(--panel); border:1px solid var(--border); border-radius:var(--radius);
+  display:flex; flex-direction:column; min-height:640px; overflow:hidden;
+}
+.chat-header{
+  padding:18px 22px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center;
+  background:var(--panel-2);
+}
+.chat-header .ch-title{font-family:var(--font-head); font-weight:600; font-size:15px;}
+.chat-header .ch-sub{font-size:12px; color:var(--text-faint); margin-top:2px;}
+.status-pill{
+  font-family:var(--font-mono); font-size:11px; padding:5px 10px; border-radius:100px; border:1px solid var(--border-hi);
+  color:var(--text-dim); display:flex; align-items:center; gap:6px;
+}
+.status-pill .blip{width:6px; height:6px; border-radius:50%; background:var(--good); animation:pulse 1.6s infinite;}
+
+.chat-body{flex:1; overflow-y:auto; padding:24px; display:flex; flex-direction:column; gap:18px;}
+.msg{max-width:82%; animation:fadeUp .35s ease;}
+.msg.ai{align-self:flex-start;}
+.msg.user{align-self:flex-end;}
+.msg-bubble{
+  padding:14px 17px; border-radius:16px; font-size:14.5px; line-height:1.6;
+}
+.msg.ai .msg-bubble{background:var(--panel-2); border:1px solid var(--border); border-top-left-radius:4px;}
+.msg.user .msg-bubble{background:var(--grad); color:#fff; border-top-right-radius:4px;}
+.msg-label{font-family:var(--font-mono); font-size:10.5px; text-transform:uppercase; letter-spacing:.08em; color:var(--text-faint); margin-bottom:6px;}
+.msg.user .msg-label{text-align:right;}
+
+.eval-tag{
+  display:inline-flex; align-items:center; gap:6px; font-family:var(--font-mono); font-size:11px;
+  padding:5px 10px; border-radius:100px; margin-top:10px; border:1px solid;
+}
+.eval-tag.weak{color:var(--danger); border-color:rgba(255,77,109,.4); background:rgba(255,77,109,.08);}
+.eval-tag.mid{color:var(--mid); border-color:rgba(255,176,32,.4); background:rgba(255,176,32,.08);}
+.eval-tag.strong{color:var(--good); border-color:rgba(0,229,160,.4); background:rgba(0,229,160,.08);}
+
+.typing{display:flex; gap:4px; padding:6px 4px;}
+.typing span{width:6px; height:6px; border-radius:50%; background:var(--text-faint); animation:blink 1.2s infinite;}
+.typing span:nth-child(2){animation-delay:.2s;} .typing span:nth-child(3){animation-delay:.4s;}
+
+.chat-input-area{border-top:1px solid var(--border); padding:16px 20px; background:var(--panel-2);}
+.chat-input-row{display:flex; gap:10px; align-items:flex-end;}
+textarea#answerInput{
+  flex:1; background:var(--bg-2); border:1px solid var(--border); border-radius:12px; color:var(--text);
+  font-family:var(--font-body); font-size:14px; padding:12px 14px; resize:none; min-height:52px; max-height:160px; line-height:1.5;
+}
+textarea#answerInput:focus{outline:none; border-color:var(--accent-2);}
+.input-hint{font-size:11px; color:var(--text-faint); margin-top:8px;}
+
+.empty-state{
+  display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; flex:1; padding:40px; color:var(--text-dim);
+}
+.empty-state .es-icon{font-size:40px; margin-bottom:14px;}
+.empty-state h3{font-family:var(--font-head); color:var(--text); margin-bottom:8px;}
+.empty-state p{max-width:360px; font-size:13.5px; line-height:1.6;}
+
+/* ---------- Error banner ---------- */
+.error-banner{
+  background:rgba(255,77,109,.1); border:1px solid rgba(255,77,109,.35); color:#ffb3c0;
+  padding:12px 16px; border-radius:12px; font-size:13px; display:flex; justify-content:space-between; align-items:center; gap:12px; margin:0 22px 16px;
+}
+
+/* ---------- Report screen ---------- */
+.report-screen{display:none; animation:fadeUp .5s ease;}
+.report-screen.active{display:block;}
+.report-hero{text-align:center; padding:30px 0 40px;}
+.report-hero h1{font-family:var(--font-head); font-size:36px; font-weight:700; letter-spacing:-.02em;}
+.report-hero p{color:var(--text-dim); margin-top:10px;}
+.report-score-ring{
+  width:180px; height:180px; margin:26px auto; position:relative; display:flex; align-items:center; justify-content:center;
+}
+.report-score-ring svg{transform:rotate(-90deg); width:180px; height:180px;}
+.report-score-ring .ring-bg{fill:none; stroke:var(--panel-2); stroke-width:12;}
+.report-score-ring .ring-fill{fill:none; stroke-width:12; stroke-linecap:round; transition:stroke-dashoffset 1s ease;}
+.report-score-ring .ring-num{position:absolute; font-family:var(--font-head); font-size:40px; font-weight:700;}
+
+.report-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-bottom:30px;}
+.stat-card{background:var(--panel); border:1px solid var(--border); border-radius:14px; padding:20px; text-align:center;}
+.stat-card .stat-num{font-family:var(--font-head); font-size:30px; font-weight:700;}
+.stat-card .stat-lbl{font-size:12px; color:var(--text-dim); margin-top:4px; text-transform:uppercase; letter-spacing:.06em;}
+.stat-card.good .stat-num{color:var(--good);}
+.stat-card.mid .stat-num{color:var(--mid);}
+.stat-card.weak .stat-num{color:var(--danger);}
+
+.report-section{margin-bottom:26px;}
+.report-section h3{font-family:var(--font-head); font-size:16px; margin-bottom:14px; display:flex; align-items:center; gap:8px;}
+.report-claim{
+  background:var(--panel); border:1px solid var(--border); border-left:4px solid var(--border-hi); border-radius:12px;
+  padding:16px 18px; margin-bottom:10px;
+}
+.report-claim.strong{border-left-color:var(--good);}
+.report-claim.mid{border-left-color:var(--mid);}
+.report-claim.weak{border-left-color:var(--danger);}
+.report-claim .rc-top{display:flex; justify-content:space-between; gap:10px; align-items:flex-start;}
+.report-claim .rc-text{font-size:14px; font-weight:600; line-height:1.5;}
+.report-claim .rc-badge{font-family:var(--font-mono); font-size:11px; padding:4px 9px; border-radius:100px; white-space:nowrap;}
+.report-claim.strong .rc-badge{background:rgba(0,229,160,.12); color:var(--good);}
+.report-claim.mid .rc-badge{background:rgba(255,176,32,.12); color:var(--mid);}
+.report-claim.weak .rc-badge{background:rgba(255,77,109,.12); color:var(--danger);}
+.report-claim .rc-note{font-size:13px; color:var(--text-dim); margin-top:8px; line-height:1.55;}
+.report-claim .rc-fix{font-size:13px; color:var(--accent-3); margin-top:8px; line-height:1.55; padding-top:8px; border-top:1px dashed var(--border);}
+
+.report-actions{display:flex; gap:12px; justify-content:center; margin-top:30px; flex-wrap:wrap;}
+
+/* ---------- Upload zone (fallback / re-upload) ---------- */
+.dropzone{
+  border:2px dashed var(--border-hi); border-radius:16px; padding:40px; text-align:center; margin:30px auto 0; max-width:520px;
+  transition:all .2s ease; cursor:pointer;
+}
+.dropzone.dragover{border-color:var(--accent-2); background:rgba(123,92,255,.06);}
+.dropzone p{color:var(--text-dim); font-size:13.5px; margin-top:8px;}
+.dropzone strong{color:var(--text);}
+
+@keyframes fadeUp{from{opacity:0; transform:translateY(14px);} to{opacity:1; transform:translateY(0);}}
+@keyframes pulse{0%,100%{opacity:1;} 50%{opacity:.3;}}
+@keyframes blink{0%,100%{opacity:.3; transform:translateY(0);} 50%{opacity:1; transform:translateY(-3px);}}
+
+@media (max-width:860px){
+  .interview-layout{grid-template-columns:1fr;}
+  .sidebar{position:static;}
+  .report-grid{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <div class="topbar">
+    <div class="brand">
+      <div class="brand-mark">DX</div>
+      <div class="brand-text">Defend Your <span>Experience</span></div>
+    </div>
+    <div class="topbar-actions" id="topActions" style="display:none;">
+      <button class="btn btn-ghost btn-sm" id="restartBtn">↺ Restart</button>
+      <button class="btn btn-primary btn-sm" id="finishBtn">Finish & Get Report →</button>
+    </div>
+  </div>
+
+  <!-- ============ LANDING ============ -->
+  <div id="landing">
+    <div class="hero">
+      <div class="hero-eyebrow">● Adaptive Mock Interview Engine</div>
+      <h1>Every line on your resume is a <span class="grad-text">claim.</span><br>Can you defend it?</h1>
+      <p>This isn't a resume reviewer. It's a skeptical interviewer that reads your actual experience, picks apart every number and statement you've made, and keeps asking "how exactly" until your story is bulletproof — or shows you exactly where it isn't.</p>
+      <div class="hero-actions">
+        <button class="btn btn-primary" id="startBtn">Start My Defense →</button>
+        <button class="btn btn-ghost" id="viewClaimsBtn">Preview extracted claims</button>
+      </div>
+    </div>
+
+    <div class="claims-preview" id="claimsPreview" style="display:none;">
+      <h3>12 claims pulled from your resume — you'll be asked to defend each one</h3>
+      <div class="claims-grid" id="claimsGrid"></div>
+    </div>
+  </div>
+
+  <!-- ============ INTERVIEW ============ -->
+  <div class="interview-layout" id="interviewLayout">
+    <div class="sidebar">
+      <div class="progress-card">
+        <h4>Session Progress</h4>
+        <div class="progress-bar-track"><div class="progress-bar-fill" id="progressFill"></div></div>
+        <div class="progress-stats"><span id="progressLabel">0 / 12 claims explored</span><span id="progressPct">0%</span></div>
+        <div class="overall-conf">
+          <div class="num" id="overallConfNum" style="color:var(--text-faint);">—</div>
+          <div class="lbl">Overall Defense Confidence</div>
+        </div>
+      </div>
+      <div class="claims-panel">
+        <h4>Claims Under Review</h4>
+        <div class="claims-list" id="claimsList"></div>
+      </div>
+    </div>
+
+    <div class="chat-panel">
+      <div class="chat-header">
+        <div>
+          <div class="ch-title" id="chatTitle">Recruiter Screen Simulation</div>
+          <div class="ch-sub" id="chatSub">Friendly but precise — clarity and confidence matter most</div>
+        </div>
+        <div class="status-pill"><span class="blip"></span>Live</div>
+      </div>
+      <div class="chat-body" id="chatBody">
+        <div class="empty-state">
+          <div class="es-icon">🎙️</div>
+          <h3>Ready when you are</h3>
+          <p>I'll start by asking about your most recent internship, then work through each metric you've claimed. Answer like you would in a real screen — I'll push where it matters.</p>
+        </div>
+      </div>
+      <div class="chat-input-area">
+        <div class="chat-input-row">
+          <textarea id="answerInput" placeholder="Type your answer..." rows="1"></textarea>
+          <button class="btn btn-primary" id="sendBtn">Send</button>
+        </div>
+        <div class="input-hint">Enter to send · Shift+Enter for new line</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ REPORT ============ -->
+  <div class="report-screen" id="reportScreen">
+    <div class="report-hero">
+      <div class="hero-eyebrow">● Defense Report</div>
+      <h1>Your Defense Readiness</h1>
+      <p>Here's exactly which claims will hold up in a recruiter screen — and which need work before you walk in.</p>
+      <div class="report-score-ring">
+        <svg viewBox="0 0 180 180">
+          <circle class="ring-bg" cx="90" cy="90" r="78"></circle>
+          <circle class="ring-fill" id="ringFill" cx="90" cy="90" r="78" stroke="url(#gradStroke)"></circle>
+          <defs>
+            <linearGradient id="gradStroke" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#7b5cff"/>
+              <stop offset="100%" stop-color="#ff4d6d"/>
+            </linearGradient>
+          </defs>
+        </svg>
+        <div class="ring-num" id="ringNum">0%</div>
+      </div>
+    </div>
+
+    <div class="report-grid">
+      <div class="stat-card good"><div class="stat-num" id="statStrong">0</div><div class="stat-lbl">Well Defended</div></div>
+      <div class="stat-card mid"><div class="stat-num" id="statMid">0</div><div class="stat-lbl">Needs Sharpening</div></div>
+      <div class="stat-card weak"><div class="stat-num" id="statWeak">0</div><div class="stat-lbl">At Risk</div></div>
+    </div>
+
+    <div class="report-section">
+      <h3>🟢 Claims you can defend confidently</h3>
+      <div id="strongList"></div>
+    </div>
+    <div class="report-section">
+      <h3>🟡 Claims that need a sharper story</h3>
+      <div id="midList"></div>
+    </div>
+    <div class="report-section">
+      <h3>🔴 Claims at risk in a real interview</h3>
+      <div id="weakList"></div>
+    </div>
+
+    <div class="report-actions">
+      <button class="btn btn-ghost" id="exportBtn">⬇ Export Report</button>
+      <button class="btn btn-ghost" id="reviewAgainBtn">↺ Drill Weak Claims Again</button>
+      <button class="btn btn-primary" id="doneBtn">Done</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+/* ============================================================
+   DATA: claims extracted from Jyoti's resume
+   ============================================================ */
+const RESUME_CONTEXT = `
+JYOTI SINGH — B.Tech Information Technology student (SGPA 8.226), ABES Engineering College.
+AI Web Developer Intern — InAmigos Foundation (IAF), Jul-Aug 2026 (1 month, remote): built AI-powered web features integrating AI tools into React.js interfaces; collaborated remotely with a distributed team.
+Full Stack Development Intern — CodeVeda, Aug-Sep 2025 (remote): engineered a MERN-stack food delivery app, increased seamless user navigation across client/admin/order modules by 40%; architected RESTful APIs with Node/Express, reduced frontend-backend latency by 25%; designed MongoDB schemas with indexing, improved query efficiency by 30%; implemented JWT auth, cart, checkout, boosted conversion rates by 15%; built admin dashboard, cut administrative overhead by 15 hours/week.
+Project: Online Food Delivery Platform (MongoDB/Express/React/Node) — responsive UI increased mobile engagement by 35%; RESTful APIs with real-time sync; secure auth, cart state management, order tracking; admin control panel.
+Project: CampusConnect Collaboration Hub (MERN, Git/GitHub) — built to support 500+ concurrent users with 99% uptime for messaging/resource-sharing; REST APIs and MongoDB architecture accelerated data retrieval by 20%; maintained strict Git version control.
+Skills: DSA, OOP, DBMS, System Design Basics, C/C++/Python/JS, React, Node, Express, MongoDB, MySQL, REST APIs. 197+ LeetCode problems solved, 3-star CodeChef rated, HackerRank rated.
+Certifications: CodeVeda internship completion, C++ (Udemy), Cognizant Technoverse Hackathon 2026, MERN Bootcamp (Koenig/JS Institute), InAmigos AI Web Dev internship completion.
+`.trim();
+
+const CLAIMS = [
+  {id:'c1', tag:'CodeVeda Internship', text:'Increased seamless user navigation by 40% across client, admin, and order-management modules.', src:'Full Stack Dev Intern — CodeVeda'},
+  {id:'c2', tag:'CodeVeda Internship', text:'Reduced frontend-backend latency by 25% via RESTful APIs built with Node.js and Express.js.', src:'Full Stack Dev Intern — CodeVeda'},
+  {id:'c3', tag:'CodeVeda Internship', text:'Improved database query efficiency by 30% through MongoDB schema design and indexing.', src:'Full Stack Dev Intern — CodeVeda'},
+  {id:'c4', tag:'CodeVeda Internship', text:'Boosted conversion rates by 15% with JWT auth, cart system, and checkout flow.', src:'Full Stack Dev Intern — CodeVeda'},
+  {id:'c5', tag:'CodeVeda Internship', text:'Cut administrative overhead by 15 hours/week with a real-time admin dashboard.', src:'Full Stack Dev Intern — CodeVeda'},
+  {id:'c6', tag:'IAF Internship', text:'Built and maintained AI-powered web features integrated into React.js interfaces.', src:'AI Web Developer Intern — InAmigos Foundation'},
+  {id:'c7', tag:'IAF Internship', text:'Collaborated remotely with a distributed team to deliver tasks on schedule.', src:'AI Web Developer Intern — InAmigos Foundation'},
+  {id:'c8', tag:'Personal Project', text:'Increased mobile engagement by 35% with a fully responsive UI.', src:'Online Food Delivery Platform'},
+  {id:'c9', tag:'Personal Project', text:'Built a centralized admin control panel for inventory and user role management.', src:'Online Food Delivery Platform'},
+  {id:'c10', tag:'Personal Project', text:'Designed to support 500+ concurrent users with 99% uptime for messaging/resource-sharing.', src:'CampusConnect Collaboration Hub'},
+  {id:'c11', tag:'Personal Project', text:'Accelerated data retrieval response times by 20% via REST API and MongoDB design.', src:'CampusConnect Collaboration Hub'},
+  {id:'c12', tag:'Technical Foundation', text:'197+ LeetCode problems solved, 3★ CodeChef rating — reflecting strong DSA fundamentals for scalable systems.', src:'Professional Summary / Skills'}
+];
+
+const STYLE_CONTEXT = "recruiter/HR screen for an entry-level Software Engineer role — friendly tone, but still probing for specificity, ownership, and clarity, not deep whiteboard technical depth.";
+
+/* ============================================================
+   STATE
+   ============================================================ */
+let state = {
+  currentClaimIdx: 0,
+  history: [], // {role, content, claimId}
+  claimStatus: {}, // claimId -> {confidence:0-100, status:'unstarted'|'weak'|'mid'|'strong', note, fix, turns:0}
+  started: false,
+  finished: false
+};
+CLAIMS.forEach(c => state.claimStatus[c.id] = {confidence:null, status:'unstarted', note:'', fix:'', turns:0});
+
+function saveState(){
+  try{ localStorage.setItem('dye_session', JSON.stringify(state)); }catch(e){}
+}
+function loadState(){
+  try{
+    const s = localStorage.getItem('dye_session');
+    if(s){ const parsed = JSON.parse(s); if(parsed && parsed.started) return parsed; }
+  }catch(e){}
+  return null;
+}
+
+/* ============================================================
+   RENDER: landing claims preview
+   ============================================================ */
+function renderClaimsPreview(){
+  const grid = document.getElementById('claimsGrid');
+  grid.innerHTML = CLAIMS.map(c => `
+    <div class="claim-card">
+      <div class="tag">${c.tag}</div>
+      <p>${escapeHtml(c.text)}</p>
+      <div class="src">from: ${escapeHtml(c.src)}</div>
+    </div>
+  `).join('');
+}
+
+function escapeHtml(str){
+  const d = document.createElement('div');
+  d.textContent = str;
+  return d.innerHTML;
+}
+
+/* ============================================================
+   RENDER: sidebar
+   ============================================================ */
+function renderSidebar(){
+  const explored = CLAIMS.filter(c => state.claimStatus[c.id].status !== 'unstarted').length;
+  const pct = Math.round((explored / CLAIMS.length) * 100);
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressLabel').textContent = `${explored} / ${CLAIMS.length} claims explored`;
+  document.getElementById('progressPct').textContent = pct + '%';
+
+  const scored = CLAIMS.filter(c => state.claimStatus[c.id].confidence !== null);
+  const overallNum = document.getElementById('overallConfNum');
+  if(scored.length){
+    const avg = Math.round(scored.reduce((s,c) => s + state.claimStatus[c.id].confidence, 0) / scored.length);
+    overallNum.textContent = avg + '%';
+    overallNum.style.color = avg >= 70 ? 'var(--good)' : avg >= 40 ? 'var(--mid)' : 'var(--danger)';
+  } else {
+    overallNum.textContent = '—';
+    overallNum.style.color = 'var(--text-faint)';
+  }
+
+  const list = document.getElementById('claimsList');
+  list.innerHTML = CLAIMS.map((c, i) => {
+    const st = state.claimStatus[c.id];
+    const dotClass = st.status;
+    const isCurrent = i === state.currentClaimIdx && !state.finished;
+    return `
+      <div class="claim-row ${isCurrent ? 'current' : ''}" data-idx="${i}">
+        <div class="crow-top">
+          <div class="crow-text">${escapeHtml(c.text.slice(0, 70))}${c.text.length > 70 ? '…' : ''}</div>
+          <div class="dot ${dotClass}"></div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+/* ============================================================
+   CHAT RENDER
+   ============================================================ */
+function renderChat(){
+  const body = document.getElementById('chatBody');
+  if(state.history.length === 0){
+    body.innerHTML = `<div class="empty-state"><div class="es-icon">🎙️</div><h3>Ready when you are</h3><p>I'll start by asking about your most recent internship, then work through each metric you've claimed. Answer like you would in a real screen — I'll push where it matters.</p></div>`;
+    return;
+  }
+  body.innerHTML = state.history.map(m => {
+    if(m.role === 'ai'){
+      let evalTag = '';
+      if(m.eval){
+        evalTag = `<div class="eval-tag ${m.eval.status}">${m.eval.status === 'strong' ? '✓ Solid' : m.eval.status === 'mid' ? '~ Needs more' : '✕ Weak spot'} — ${escapeHtml(m.eval.note || '')}</div>`;
+      }
+      return `<div class="msg ai"><div class="msg-label">Interviewer</div><div class="msg-bubble">${escapeHtml(m.content)}${evalTag}</div></div>`;
+    } else {
+      return `<div class="msg user"><div class="msg-label">You</div><div class="msg-bubble">${escapeHtml(m.content)}</div></div>`;
+    }
+  }).join('');
+  body.scrollTop = body.scrollHeight;
+}
+
+function showTyping(){
+  const body = document.getElementById('chatBody');
+  const el = document.createElement('div');
+  el.className = 'msg ai';
+  el.id = 'typingIndicator';
+  el.innerHTML = `<div class="msg-label">Interviewer</div><div class="msg-bubble"><div class="typing"><span></span><span></span><span></span></div></div>`;
+  body.appendChild(el);
+  body.scrollTop = body.scrollHeight;
+}
+function hideTyping(){
+  const el = document.getElementById('typingIndicator');
+  if(el) el.remove();
+}
+
+function showError(msg, retryFn){
+  const inputArea = document.querySelector('.chat-input-area');
+  let banner = document.getElementById('errBanner');
+  if(banner) banner.remove();
+  banner = document.createElement('div');
+  banner.className = 'error-banner';
+  banner.id = 'errBanner';
+  banner.innerHTML = `<span>⚠ ${escapeHtml(msg)}</span>`;
+  const retryBtn = document.createElement('button');
+  retryBtn.className = 'btn btn-sm btn-ghost';
+  retryBtn.textContent = 'Retry';
+  retryBtn.onclick = () => { banner.remove(); retryFn(); };
+  banner.appendChild(retryBtn);
+  document.querySelector('.chat-body').insertAdjacentElement('beforebegin', banner);
+}
+
+/* ============================================================
+   API CALL to Claude
+   ============================================================ */
+async function callClaude(systemPrompt, userPrompt, retries=2){
+  try{
+    const response = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: "claude-sonnet-4-6",
+        max_tokens: 1000,
+        system: systemPrompt,
+        messages: [{ role: "user", content: userPrompt }]
+      })
+    });
+    if(!response.ok){
+      if(response.status === 429 && retries > 0){
+        await new Promise(r => setTimeout(r, 1200));
+        return callClaude(systemPrompt, userPrompt, retries - 1);
+      }
+      throw new Error('API error ' + response.status);
+    }
+    const data = await response.json();
+    const textBlock = data.content.find(b => b.type === 'text');
+    return textBlock ? textBlock.text : '';
+  }catch(err){
+    if(retries > 0){
+      await new Promise(r => setTimeout(r, 1000));
+      return callClaude(systemPrompt, userPrompt, retries - 1);
+    }
+    throw err;
+  }
+}
+
+function buildSystemPrompt(){
+  return `You are a skeptical but fair technical recruiter conducting a live screening interview for an entry-level Software Engineer role. The candidate is Jyoti Singh, a B.Tech IT student. Interview context: ${STYLE_CONTEXT}
+
+CANDIDATE'S RESUME CONTENT (ground truth — every claim here must be probed, not assumed true):
+${RESUME_CONTEXT}
+
+Your job: for the CURRENT CLAIM under discussion, ask sharp, specific, personalized follow-up questions that a real interviewer would ask to test whether the candidate actually understands and can defend the claim — especially any numbers, metrics, or superlatives. Focus on: how the metric was measured, what the candidate specifically did vs the team, what tradeoffs were made, what would happen if pressed on specifics (e.g. "how did you measure that 40%?", "what was the baseline?", "what would you do differently?").
+
+After the candidate answers, evaluate their answer's strength based ONLY on what they actually said (not what's plausible). Then either ask a deeper follow-up on the SAME claim (if the answer was vague, or you haven't fully tested it, max 3 follow-ups per claim) or move to the NEXT claim if the candidate has defended this one adequately or you've asked enough.
+
+Respond with ONLY valid JSON, no markdown fences, no preamble, in this exact shape:
+{
+  "question": "the next question or opening statement to say to the candidate (1-3 sentences, natural spoken interviewer tone)",
+  "evaluation": {
+    "status": "strong" | "mid" | "weak" | null,
+    "note": "one short sentence (under 18 words) explaining the evaluation of the PREVIOUS answer, or null if this is the first question for a claim",
+    "confidence": 0-100 or null,
+    "fixTip": "one specific, actionable sentence on how to strengthen this answer, or null if strong/first question"
+  },
+  "moveToNextClaim": true or false
+}
+
+Rules:
+- evaluation refers to the candidate's PREVIOUS answer (the one you just received). If there's no previous answer yet for this claim, set evaluation fields to null.
+- Never fabricate details about the candidate's experience beyond the resume content given.
+- Keep questions concise, conversational, and specific to THIS claim — never generic template questions like "tell me about a challenge".
+- If the candidate gives a vague or generic answer (e.g. "I worked hard", "the team decided"), mark it weak and dig into specifics.
+- If they give concrete details (numbers, tools, decisions, tradeoffs, what they personally did), mark it strong.
+- moveToNextClaim should be true once you've asked 2-3 questions on a claim OR the candidate has clearly defended it well in 1 answer.`;
+}
+
+/* ============================================================
+   INTERVIEW FLOW
+   ============================================================ */
+async function askNextQuestion(userAnswer){
+  const claim = CLAIMS[state.currentClaimIdx];
+  if(!claim){
+    finishInterview();
+    return;
+  }
+  showTyping();
+  document.getElementById('sendBtn').disabled = true;
+
+  const historyText = state.history
+    .filter(m => m.claimId === claim.id)
+    .map(m => `${m.role === 'ai' ? 'Interviewer' : 'Candidate'}: ${m.content}`)
+    .join('\n');
+
+  const userPrompt = `CURRENT CLAIM being tested: "${claim.text}" (source: ${claim.src})
+
+Conversation so far on THIS claim:
+${historyText || '(no questions asked yet on this claim)'}
+
+${userAnswer ? `Candidate's latest answer: "${userAnswer}"` : 'This is the very first question for this claim — ask an opening probing question about it.'}
+
+Respond with the JSON object as instructed.`;
+
+  try{
+    const raw = await callClaude(buildSystemPrompt(), userPrompt);
+    hideTyping();
+    const parsed = parseAIResponse(raw);
+
+    if(parsed.evaluation && parsed.evaluation.status){
+      const st = state.claimStatus[claim.id];
+      st.status = parsed.evaluation.status;
+      st.confidence = parsed.evaluation.confidence ?? st.confidence ?? 50;
+      st.note = parsed.evaluation.note || st.note;
+      st.fix = parsed.evaluation.fixTip || st.fix;
+      st.turns += 1;
+      // attach eval to the last user message bubble context (shown on ai's next message)
+      const lastAiMsg = [...state.history].reverse().find(m => m.role === 'ai' && m.claimId === claim.id);
+    }
+
+    state.history.push({
+      role:'ai',
+      content: parsed.question,
+      claimId: claim.id,
+      eval: parsed.evaluation && parsed.evaluation.status ? {status: parsed.evaluation.status, note: parsed.evaluation.note} : null
+    });
+
+    if(parsed.moveToNextClaim){
+      state.currentClaimIdx += 1;
+    }
+
+    renderChat();
+    renderSidebar();
+    saveState();
+
+    if(state.currentClaimIdx >= CLAIMS.length){
+      setTimeout(() => finishInterview(), 600);
+    }
+  }catch(err){
+    hideTyping();
+    showError('The interviewer hit a temporary connection issue (possible rate limit). Your progress is saved.', () => askNextQuestion(userAnswer));
+  }finally{
+    document.getElementById('sendBtn').disabled = false;
+  }
+}
+
+function parseAIResponse(raw){
+  let cleaned = raw.trim().replace(/^```json/i, '').replace(/^```/, '').replace(/```$/, '').trim();
+  try{
+    return JSON.parse(cleaned);
+  }catch(e){
+    // fallback: extract question-like text
+    return {
+      question: cleaned.slice(0, 400) || "Can you walk me through that in more detail?",
+      evaluation: {status:null, note:null, confidence:null, fixTip:null},
+      moveToNextClaim:false
+    };
+  }
+}
+
+async function handleSend(){
+  const input = document.getElementById('answerInput');
+  const text = input.value.trim();
+  if(!text) return;
+  const claim = CLAIMS[state.currentClaimIdx];
+  if(!claim) return;
+
+  state.history.push({role:'user', content:text, claimId: claim.id});
+  input.value = '';
+  autoResize(input);
+  renderChat();
+  saveState();
+
+  await askNextQuestion(text);
+}
+
+function autoResize(el){
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, 160) + 'px';
+}
+
+/* ============================================================
+   REPORT
+   ============================================================ */
+function finishInterview(){
+  state.finished = true;
+  saveState();
+  document.getElementById('interviewLayout').classList.remove('active');
+  document.getElementById('topActions').style.display = 'none';
+  renderReport();
+  document.getElementById('reportScreen').classList.add('active');
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function renderReport(){
+  const scored = CLAIMS.filter(c => state.claimStatus[c.id].confidence !== null);
+  const avg = scored.length ? Math.round(scored.reduce((s,c) => s + state.claimStatus[c.id].confidence, 0) / scored.length) : 0;
+
+  document.getElementById('ringNum').textContent = avg + '%';
+  const ring = document.getElementById('ringFill');
+  const circumference = 2 * Math.PI * 78;
+  ring.style.strokeDasharray = circumference;
+  ring.style.strokeDashoffset = circumference - (circumference * avg / 100);
+
+  const strong = CLAIMS.filter(c => state.claimStatus[c.id].status === 'strong');
+  const mid = CLAIMS.filter(c => state.claimStatus[c.id].status === 'mid');
+  const weak = CLAIMS.filter(c => state.claimStatus[c.id].status === 'weak');
+  const unstarted = CLAIMS.filter(c => state.claimStatus[c.id].status === 'unstarted');
+
+  document.getElementById('statStrong').textContent = strong.length;
+  document.getElementById('statMid').textContent = mid.length;
+  document.getElementById('statWeak').textContent = weak.length + unstarted.length;
+
+  const renderList = (arr, targetId, cls) => {
+    const el = document.getElementById(targetId);
+    if(arr.length === 0){
+      el.innerHTML = `<p style="color:var(--text-faint); font-size:13px;">None in this category.</p>`;
+      return;
+    }
+    el.innerHTML = arr.map(c => {
+      const st = state.claimStatus[c.id];
+      return `
+        <div class="report-claim ${cls}">
+          <div class="rc-top">
+            <div class="rc-text">${escapeHtml(c.text)}</div>
+            <div class="rc-badge">${st.confidence !== null ? st.confidence + '%' : 'not tested'}</div>
+          </div>
+          ${st.note ? `<div class="rc-note">${escapeHtml(st.note)}</div>` : (st.status === 'unstarted' ? `<div class="rc-note">This claim wasn't reached during the session — practice it before your interview.</div>` : '')}
+          ${st.fix ? `<div class="rc-fix">💡 ${escapeHtml(st.fix)}</div>` : ''}
+        </div>
+      `;
+    }).join('');
+  };
+
+  renderList(strong, 'strongList', 'strong');
+  renderList(mid, 'midList', 'mid');
+  renderList([...weak, ...unstarted], 'weakList', 'weak');
+}
+
+function exportReport(){
+  const scored = CLAIMS.filter(c => state.claimStatus[c.id].confidence !== null);
+  const avg = scored.length ? Math.round(scored.reduce((s,c) => s + state.claimStatus[c.id].confidence, 0) / scored.length) : 0;
+  let text = `DEFEND YOUR EXPERIENCE — DEFENSE REPORT\nJyoti Singh — SDE Interview Prep\nGenerated: ${new Date().toLocaleString()}\nOverall Defense Confidence: ${avg}%\n\n`;
+  CLAIMS.forEach(c => {
+    const st = state.claimStatus[c.id];
+    text += `--------------------------------------------------\nCLAIM: ${c.text}\nSource: ${c.src}\nStatus: ${st.status.toUpperCase()}${st.confidence !== null ? ' (' + st.confidence + '%)' : ''}\n`;
+    if(st.note) text += `Assessment: ${st.note}\n`;
+    if(st.fix) text += `How to strengthen: ${st.fix}\n`;
+    text += '\n';
+  });
+  const blob = new Blob([text], {type:'text/plain'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'defense-report-jyoti-singh.txt';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+/* ============================================================
+   NAV / INIT
+   ============================================================ */
+function startInterview(){
+  document.getElementById('landing').style.display = 'none';
+  document.getElementById('interviewLayout').classList.add('active');
+  document.getElementById('reportScreen').classList.remove('active');
+  document.getElementById('topActions').style.display = 'flex';
+  state.started = true;
+  renderSidebar();
+  renderChat();
+  saveState();
+  if(state.history.length === 0){
+    askNextQuestion(null);
+  }
+}
+
+function restartAll(){
+  if(!confirm('This will clear your current session and start fresh. Continue?')) return;
+  localStorage.removeItem('dye_session');
+  state = {currentClaimIdx:0, history:[], claimStatus:{}, started:false, finished:false};
+  CLAIMS.forEach(c => state.claimStatus[c.id] = {confidence:null, status:'unstarted', note:'', fix:'', turns:0});
+  document.getElementById('reportScreen').classList.remove('active');
+  document.getElementById('interviewLayout').classList.remove('active');
+  document.getElementById('topActions').style.display = 'none';
+  document.getElementById('landing').style.display = 'block';
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function reviewWeakAgain(){
+  const weakIdxs = CLAIMS.map((c,i) => ({c,i})).filter(o => ['weak','mid','unstarted'].includes(state.claimStatus[o.c.id].status)).map(o => o.i);
+  if(weakIdxs.length === 0){ alert('Great news — no weak claims to drill!'); return; }
+  state.currentClaimIdx = weakIdxs[0];
+  state.finished = false;
+  document.getElementById('reportScreen').classList.remove('active');
+  document.getElementById('interviewLayout').classList.add('active');
+  document.getElementById('topActions').style.display = 'flex';
+  renderSidebar();
+  renderChat();
+  saveState();
+  askNextQuestion(null);
+}
+
+/* Event listeners */
+document.getElementById('startBtn').addEventListener('click', startInterview);
+document.getElementById('viewClaimsBtn').addEventListener('click', () => {
+  const el = document.getElementById('claimsPreview');
+  el.style.display = el.style.display === 'none' ? 'block' : 'none';
+  if(el.style.display === 'block') el.scrollIntoView({behavior:'smooth', block:'start'});
+});
+document.getElementById('sendBtn').addEventListener('click', handleSend);
+document.getElementById('answerInput').addEventListener('keydown', (e) => {
+  if(e.key === 'Enter' && !e.shiftKey){
+    e.preventDefault();
+    handleSend();
+  }
+});
+document.getElementById('answerInput').addEventListener('input', (e) => autoResize(e.target));
+document.getElementById('restartBtn').addEventListener('click', restartAll);
+document.getElementById('finishBtn').addEventListener('click', finishInterview);
+document.getElementById('exportBtn').addEventListener('click', exportReport);
+document.getElementById('reviewAgainBtn').addEventListener('click', reviewWeakAgain);
+document.getElementById('doneBtn').addEventListener('click', () => { window.scrollTo({top:0, behavior:'smooth'}); });
+
+document.getElementById('claimsList').addEventListener('click', (e) => {
+  const row = e.target.closest('.claim-row');
+  if(!row) return;
+  // informational only in current version - could jump navigation later
+});
+
+/* Init */
+renderClaimsPreview();
+const saved = loadState();
+if(saved){
+  state = saved;
+  if(state.finished){
+    document.getElementById('landing').style.display = 'none';
+    renderReport();
+    document.getElementById('reportScreen').classList.add('active');
+  } else if(state.started){
+    document.getElementById('landing').style.display = 'none';
+    document.getElementById('interviewLayout').classList.add('active');
+    document.getElementById('topActions').style.display = 'flex';
+    renderSidebar();
+    renderChat();
+  }
+}
+</script>
+</body>
+</html>
